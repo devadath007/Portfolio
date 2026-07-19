@@ -1,3 +1,19 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCaD6y_7yeFjQnkGngSyTlUsTNg4B7WwrE",
+  authDomain: "portfolio-cccd5.firebaseapp.com",
+  projectId: "portfolio-cccd5",
+  storageBucket: "portfolio-cccd5.firebasestorage.app",
+  messagingSenderId: "1049247291249",
+  appId: "1:1049247291249:web:e36d06b1f689f499dd88d0",
+  measurementId: "G-G83RGTKWWV"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 const defaultPortfolioData = {
     hero: {
         name: "Devadath A S",
@@ -67,33 +83,46 @@ const defaultPortfolioData = {
     }
 };
 
-class PortfolioDataManager {
+export class PortfolioDataManager {
     constructor() {
-        this.storageKey = 'portfolio_data_v2'; // new version for new schema
-        this.data = this.loadData();
+        this.storageKey = 'portfolio_data_v2'; 
+        this.data = null;
     }
 
-    loadData() {
-        const savedData = localStorage.getItem(this.storageKey);
-        if (savedData) {
-            try {
-                return JSON.parse(savedData);
-            } catch (e) {
-                console.error("Error parsing saved portfolio data:", e);
-                return defaultPortfolioData;
-            }
-        }
-        return JSON.parse(JSON.stringify(defaultPortfolioData)); // clone default
-    }
-
-    saveData(newData) {
+    async init() {
         try {
-            const dataString = JSON.stringify(newData);
-            localStorage.setItem(this.storageKey, dataString);
-            this.data = newData;
+            const docRef = doc(db, "portfolio", "data");
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                this.data = docSnap.data();
+            } else {
+                // Initial migration from local storage or default
+                const localData = localStorage.getItem(this.storageKey);
+                this.data = localData ? JSON.parse(localData) : JSON.parse(JSON.stringify(defaultPortfolioData));
+                await setDoc(docRef, this.data);
+            }
         } catch (e) {
-            console.error("Error saving to local storage", e);
-            alert("Failed to save! Your images might be taking up too much space. Please try a smaller image or use an Image URL.");
+            console.error("Error connecting to Firebase:", e);
+            // Fallback to local storage
+            const localData = localStorage.getItem(this.storageKey);
+            this.data = localData ? JSON.parse(localData) : JSON.parse(JSON.stringify(defaultPortfolioData));
+        }
+    }
+
+    async saveData(newData) {
+        this.data = newData;
+        
+        // Backup to local storage
+        try {
+            localStorage.setItem(this.storageKey, JSON.stringify(this.data));
+        } catch (e) { console.error("Local storage error:", e); }
+
+        try {
+            const docRef = doc(db, "portfolio", "data");
+            await setDoc(docRef, newData);
+        } catch (e) {
+            console.error("Error saving to Firebase:", e);
+            alert("Failed to save to Firebase! If you added an image, it might be too large.");
         }
     }
 
@@ -102,5 +131,5 @@ class PortfolioDataManager {
     }
 }
 
-// Global Instance
-window.portfolioManager = new PortfolioDataManager();
+export const portfolioManager = new PortfolioDataManager();
+window.portfolioManager = portfolioManager; // Expose globally for inline scripts

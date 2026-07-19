@@ -1,3 +1,5 @@
+import { portfolioManager } from './data.js';
+
 // --- STATE RENDERING LOGIC ---
 function renderContent() {
     const data = window.portfolioManager.getData();
@@ -517,7 +519,8 @@ function initAdminLogic() {
 }
 
 // --- STANDARD UI LOGIC ---
-document.addEventListener('DOMContentLoaded', () => {
+async function bootstrap() {
+    await portfolioManager.init();
     renderContent();
     initAdminLogic();
 
@@ -569,4 +572,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const revealOptions = { threshold: 0.15, rootMargin: "0px 0px -50px 0px" };
     const revealObserver = new IntersectionObserver(revealCallback, revealOptions);
     revealElements.forEach(el => revealObserver.observe(el));
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootstrap);
+} else {
+    bootstrap();
+}
