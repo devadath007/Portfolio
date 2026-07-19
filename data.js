@@ -92,10 +92,21 @@ export class PortfolioDataManager {
     async init() {
         try {
             const docRef = doc(db, "portfolio", "data");
+            
+            // EMERGENCY RESTORE: If opened locally, forcefully push local storage to Firebase
+            if (window.location.protocol === 'file:') {
+                const localDataStr = localStorage.getItem(this.storageKey);
+                if (localDataStr) {
+                    this.data = JSON.parse(localDataStr);
+                    await setDoc(docRef, this.data);
+                    console.log("SUCCESSFULLY RESTORED LOCAL DATA TO FIREBASE!");
+                }
+            }
+
             const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) {
+            if (docSnap.exists() && window.location.protocol !== 'file:') {
                 this.data = docSnap.data();
-            } else {
+            } else if (!this.data) {
                 // Initial migration from local storage or default
                 const localData = localStorage.getItem(this.storageKey);
                 this.data = localData ? JSON.parse(localData) : JSON.parse(JSON.stringify(defaultPortfolioData));
