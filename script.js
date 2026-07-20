@@ -30,7 +30,8 @@ function renderContent() {
     projectsContainer.innerHTML = '';
     data.projects.forEach(p => {
         const card = `
-            <div class="card-new" data-id="${p.id}">
+            <div class="reveal">
+                <div class="card-new" data-id="${p.id}">
                 <div class="admin-actions-overlay">
                     <button class="admin-edit-item-btn" onclick="editItem('projects', ${p.id})">Edit</button>
                     <button class="admin-delete-btn" onclick="deleteItem('projects', ${p.id})">Delete</button>
@@ -54,6 +55,7 @@ function renderContent() {
                     </div>
                 </div>
             </div>
+            </div>
         `;
         projectsContainer.innerHTML += card;
     });
@@ -63,7 +65,8 @@ function renderContent() {
     certsContainer.innerHTML = '';
     data.certifications.forEach(c => {
         const card = `
-            <div class="card-new" data-id="${c.id}">
+            <div class="reveal">
+                <div class="card-new" data-id="${c.id}">
                 <div class="admin-actions-overlay">
                     <button class="admin-edit-item-btn" onclick="editItem('certifications', ${c.id})">Edit</button>
                     <button class="admin-delete-btn" onclick="deleteItem('certifications', ${c.id})">Delete</button>
@@ -87,6 +90,7 @@ function renderContent() {
                     ` : ''}
                 </div>
             </div>
+            </div>
         `;
         certsContainer.innerHTML += card;
     });
@@ -95,10 +99,10 @@ function renderContent() {
     const skillsContainer = document.getElementById('render-skills-container');
     skillsContainer.innerHTML = '';
     
-    data.skills.forEach((s, index) => {
-        const delay = index * 0.15; // Slower staggered delay for premium feel
+    data.skills.forEach((s) => {
         const card = `
-            <div class="skill-card" data-id="${s.id}" style="animation-delay: ${delay}s;">
+            <div class="reveal">
+                <div class="skill-card" data-id="${s.id}">
                 <div class="admin-actions-overlay">
                     <button class="admin-edit-btn" onclick="editItem('skills', ${s.id})" style="position:static; margin-bottom:5px;">Edit</button>
                     <button class="admin-delete-btn" onclick="deleteItem('skills', ${s.id})" style="position:static;">Delete</button>
@@ -106,6 +110,7 @@ function renderContent() {
                 <img src="${s.imageUrl}" alt="${s.name}" class="skill-icon-img">
                 <h4>${s.name}</h4>
                 <p>${s.label}</p>
+                </div>
             </div>
         `;
         skillsContainer.innerHTML += card;
