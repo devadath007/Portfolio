@@ -958,6 +958,13 @@ async function bootstrap() {
     await portfolioManager.init();
     // 4. Re-render just in case Firebase had newer data
     renderContent();
+    
+    // Hide luxury loader
+    setTimeout(() => {
+        const loader = document.getElementById('luxury-loader');
+        if (loader) loader.classList.add('hidden');
+    }, 100);
+
     initContactForm();
     initAdminLogic();
 
