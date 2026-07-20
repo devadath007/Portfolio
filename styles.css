@@ -48,7 +48,7 @@ html {
     will-change: transform, opacity;
 }
 .run-animation .animate-on-load {
-    animation: luxuryFadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation: luxuryFadeUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 @keyframes luxuryFadeUp {
     from {

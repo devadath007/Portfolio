@@ -953,14 +953,14 @@ async function bootstrap() {
     // 1. Initial render (fast local cache)
     renderContent();
     
-    // 2. Fetch from Firebase to ensure we have latest data
+    // 2. Trigger load animations IMMEDIATELY for luxury feel
+    document.body.classList.add('run-animation');
+    
+    // 3. Fetch from Firebase to ensure we have latest data
     await portfolioManager.init();
     
-    // 3. Re-render just in case Firebase had newer data
+    // 4. Re-render just in case Firebase had newer data
     renderContent();
-    
-    // 4. Trigger load animations ONLY AFTER data is fully loaded
-    document.body.classList.add('run-animation');
 
     initContactForm();
     initAdminLogic();
