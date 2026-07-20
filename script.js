@@ -240,7 +240,7 @@ function openCustomPrompt(options, callback) {
                     canvas.width = width; canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
-                    finalize(canvas.toDataURL('image/jpeg', 0.7));
+                    finalize(canvas.toDataURL('image/webp', 0.8));
                 };
                 img.src = evt.target.result;
             };
