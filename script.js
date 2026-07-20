@@ -57,7 +57,7 @@ const sectionTemplates = {
                     <div class="header-line"></div>
                     <button class="admin-edit-btn" id="edit-contact-btn" style="display:none;">Edit Contact Info</button>
                 </div>
-                <div class="contact-wrapper">
+                <div class="contact-wrapper reveal">
                     <div class="contact-info">
                         <h3>Let's build something together.</h3>
                         <p>I'm currently looking for new opportunities and collaborations. Whether you have a question or just want to say hi, my inbox is always open.</p>
