@@ -709,7 +709,7 @@ async function bootstrap() {
     const revealObserver = new IntersectionObserver(revealCallback, revealOptions);
     revealElements.forEach(el => revealObserver.observe(el));
     
-    document.body.classList.remove('page-loading');
+    document.body.classList.add('run-animation');
 }
 
 if (document.readyState === 'loading') {

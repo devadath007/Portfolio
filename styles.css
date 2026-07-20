@@ -42,31 +42,25 @@ html {
     overflow-x: hidden;
 }
 
-body.page-loading main {
+.animate-on-load {
     opacity: 0;
-    pointer-events: none;
+    transform: translateY(30px);
 }
-body.page-loading::before {
-    content: "";
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    width: 40px;
-    height: 40px;
-    margin-top: -20px;
-    margin-left: -20px;
-    border: 3px solid rgba(255, 255, 255, 0.1);
-    border-top-color: var(--accent-copper);
-    border-radius: 50%;
-    animation: spinner 1s linear infinite;
-    z-index: 9999;
+.run-animation .animate-on-load {
+    animation: luxuryFadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-@keyframes spinner {
-    to { transform: rotate(360deg); }
+@keyframes luxuryFadeUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
-main {
-    transition: opacity 0.5s ease-in;
-}
+.run-animation .hero-greeting { animation-delay: 0.1s; }
+.run-animation .hero-name { animation-delay: 0.2s; }
+.run-animation .hero-tagline { animation-delay: 0.3s; }
+.run-animation .hero-desc { animation-delay: 0.4s; }
+.run-animation .hero-actions { animation-delay: 0.5s; }
+.run-animation .hero-image-container { animation-delay: 0.4s; }
 
 body {
     font-family: var(--font-main);
