@@ -9,7 +9,7 @@ const sectionTemplates = {
                     <h2>About Me</h2>
                     <div class="header-line"></div>
                 </div>
-                <div class="about-content" style="grid-template-columns: 1fr;">
+                <div class="about-content reveal" style="grid-template-columns: 1fr;">
                     <div class="about-text">
                         <p class="editable-text" id="render-about-bio" data-key="about.bio"></p>
                     </div>
