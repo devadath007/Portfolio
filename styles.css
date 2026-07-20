@@ -855,8 +855,8 @@ footer {
    ========================================= */
 .reveal {
     opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.8s ease-out;
+    transform: translateY(50px);
+    transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .reveal.active {
@@ -1364,12 +1364,12 @@ body.admin-active .admin-actions-overlay {
 }
 
 .reveal.active .skill-card {
-    animation: fadeUpIn 0.6s ease-out forwards;
+    animation: fadeUpIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .skill-card {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(50px);
 }
 
 @keyframes fadeUpIn {
