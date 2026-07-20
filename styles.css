@@ -651,6 +651,12 @@ p {
 .physics-bg {
     background: radial-gradient(circle at center, #1f2125 0%, #141517 100%);
 }
+/* =========================================
+   CERTIFICATIONS SECTION
+   ========================================= */
+.certs {
+    padding: var(--section-padding);
+}
 
 /* =========================================
    SKILLS SECTION
