@@ -664,6 +664,8 @@ async function bootstrap() {
     const revealOptions = { threshold: 0.15, rootMargin: "0px 0px -50px 0px" };
     const revealObserver = new IntersectionObserver(revealCallback, revealOptions);
     revealElements.forEach(el => revealObserver.observe(el));
+    
+    document.body.classList.remove('page-loading');
 }
 
 if (document.readyState === 'loading') {
