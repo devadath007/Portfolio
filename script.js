@@ -270,6 +270,36 @@ function toggleAdminMode(enable) {
                 }
             });
         }
+
+        // Enable drag and drop sorting for certifications
+        const certsContainer = document.getElementById('render-certs-container');
+        if (certsContainer && window.Sortable) {
+            window.certsSortable = new Sortable(certsContainer, {
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                onEnd: function (evt) {
+                    const data = window.portfolioManager.getData();
+                    const movedItem = data.certifications.splice(evt.oldIndex, 1)[0];
+                    data.certifications.splice(evt.newIndex, 0, movedItem);
+                    window.portfolioManager.saveData(data);
+                }
+            });
+        }
+
+        // Enable drag and drop sorting for projects
+        const projectsContainer = document.getElementById('render-projects-container');
+        if (projectsContainer && window.Sortable) {
+            window.projectsSortable = new Sortable(projectsContainer, {
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                onEnd: function (evt) {
+                    const data = window.portfolioManager.getData();
+                    const movedItem = data.projects.splice(evt.oldIndex, 1)[0];
+                    data.projects.splice(evt.newIndex, 0, movedItem);
+                    window.portfolioManager.saveData(data);
+                }
+            });
+        }
         
         // Show inline add buttons
         document.querySelectorAll('.admin-add-btn').forEach(btn => btn.style.display = 'inline-block');
@@ -299,6 +329,14 @@ function toggleAdminMode(enable) {
         if (window.skillsSortable) {
             window.skillsSortable.destroy();
             window.skillsSortable = null;
+        }
+        if (window.certsSortable) {
+            window.certsSortable.destroy();
+            window.certsSortable = null;
+        }
+        if (window.projectsSortable) {
+            window.projectsSortable.destroy();
+            window.projectsSortable = null;
         }
         
         document.querySelectorAll('.admin-add-btn').forEach(btn => btn.style.display = 'none');
