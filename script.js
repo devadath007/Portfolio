@@ -950,20 +950,17 @@ function initContactForm() {
 // --- STANDARD UI LOGIC ---
 async function bootstrap() {
     // 1. Instantly render from local cache so the profile picture is there immediately
+    // 1. Initial render (fast local cache)
     renderContent();
-    // 2. Instantly trigger load animations
-    document.body.classList.add('run-animation');
     
-    // 3. Fetch from Firebase to ensure we have latest data
+    // 2. Fetch from Firebase to ensure we have latest data
     await portfolioManager.init();
-    // 4. Re-render just in case Firebase had newer data
+    
+    // 3. Re-render just in case Firebase had newer data
     renderContent();
     
-    // Hide luxury loader
-    setTimeout(() => {
-        const loader = document.getElementById('luxury-loader');
-        if (loader) loader.classList.add('hidden');
-    }, 100);
+    // 4. Trigger load animations ONLY AFTER data is fully loaded
+    document.body.classList.add('run-animation');
 
     initContactForm();
     initAdminLogic();
