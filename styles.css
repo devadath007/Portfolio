@@ -42,11 +42,29 @@ html {
     overflow-x: hidden;
 }
 
-body.page-loading > * {
+body.page-loading main {
     opacity: 0;
     pointer-events: none;
 }
-body > * {
+body.page-loading::before {
+    content: "";
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    margin-top: -20px;
+    margin-left: -20px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top-color: var(--accent-copper);
+    border-radius: 50%;
+    animation: spinner 1s linear infinite;
+    z-index: 9999;
+}
+@keyframes spinner {
+    to { transform: rotate(360deg); }
+}
+main {
     transition: opacity 0.5s ease-in;
 }
 
