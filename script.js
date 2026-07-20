@@ -1,4 +1,4 @@
-import { portfolioManager } from './data.js?v=4';
+import { portfolioManager } from './data.js?v=10';
 
 // --- STATE RENDERING LOGIC ---
 const sectionTemplates = {
