@@ -156,21 +156,27 @@ export class PortfolioDataManager {
         let modified = false;
 
         const correctLogos = {
-            "ChatGPT": "https://cdn.worldvectorlogo.com/logos/chatgpt-4.svg",
-            "GitHub": "https://cdn.worldvectorlogo.com/logos/github-icon-1.svg"
+            "ChatGPT": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzEwYTM3ZiI+PHBhdGggZD0iTTIyLjI4IDEwLjQ2Yy0uMDUtMS41Ny0uNzMtMy4wNy0xLjktNC4xNC0xLjE3LTEuMDctMi43My0xLjU1LTQuMjgtMS4zLTEuMDctMS4wNy0yLjYxLTEuNjEtNC4xNS0xLjQ2LTEuNTQuMTUtMi45NS45Ni0zLjgzIDIuMTlDNi41NCA1LjMzIDQuOSA1LjQ4IDMuNTUgNi4yNyAyLjIgNy4wNSAxLjI1IDguMzUuOTYgOS44N2MtLjI5IDEuNTItLjAyIDMuMDkuNzMgNC40MS4wNSAxLjU3LjczIDMuMDcgMS45IDQuMTQgMS4xNyAxLjA3IDIuNzMgMS41NSA0LjI4IDEuMyAxLjA3IDEuMDcgMi42MSAxLjYxIDQuMTUgMS40NiAxLjU0LS4xNSAyLjk1LS45NiAzLjgzLTIuMTkgMS41OS40MiAzLjIyLjI3IDQuNTgtLjUxIDEuMzUtLjc4IDIuMy0yLjA4IDIuNTktMy42LjI5LTEuNTIuMDItMy4wOS0uNzMtNC40MWwtLjAxLS4wMXptLTMuMyAyLjI4aC0zLjkzdjIuMjRoMi45NWMtLjMyIDEuMjYtMS4zMSAyLjIxLTIuNTggMi40OC0xLjI4LjI3LTIuNjEtLjE1LTMuNDctMS4wOWwtMS44OSAxLjA5YzEuNDcgMS41OCAzLjg2IDIuMSA1LjkyLjgzIDEuNjMtMS4wMSAyLjUyLTIuODEgMi4yOC00LjcyLS4xMS0uODQtLjUyLTEuNjEtMS4xNS0yLjE4bC0xLjY2Ljk1di4wMmMxLjE3LS4xOCAyLjE2LS45NSAyLjYzLTIuMDJsLjktMS41NXpNNi45IDguMDRsMy4xNC0xLjgxYy0uNTctMS4wOC0xLjY5LTEuNzQtMi45MS0xLjcyLTEuNjIuMDMtMy4xIDEuMDQtMy42OSAyLjUzLS41OSAxLjQ5LS4xMyAzLjE2IDEuMTUgNC4xOWwuNzEtMS4yM2MtLjc2LS43MS0xLjE0LTEuNzktLjk3LTIuODIuMTYtMS4wMy44OC0xLjg3IDEuODQtMi4xNWwxLjY5LS45N3YuMDFjLS4zMi41NS0uNjUgMS4xLS45NiAxLjY1bC0uMDEuMzJ6bTguMDEgNi41NGwtMy4xNCAxLjgxYy41NyAxLjA4IDEuNjkgMS43NCAyLjkxIDEuNzIgMS42Mi0uMDMgMy4xLTEuMDQtMy42OS0yLjUzLjU5LTEuNDkuMTMtMy4xNi0xLjE1LTQuMTlsLS43MSAxLjIzYy43Ni43MSAxLjE0IDEuNzkuOTcgMi44Mi0uMTYgMS4wMy0uODggMS44Ny0xLjg0IDIuMTVsLTEuNjkuOTd2LS4wMWMuMzItLjU1LjY1LTEuMS45Ni0xLjY1bC4wMS0uMzJ6bS02LjYtNC45bDEuODktMS4wOWMtMS40Ny0xLjU4LTMuODYtMi4xLTUuOTItLjgzLTEuNjMgMS4wMS0yLjUyIDIuODEtMi4yOCA0LjcyLjExLjg0LjUyIDEuNjEgMS4xNSAyLjE4bDEuNjYtLjk1di0uMDJjLTEuMTcuMTgtMi4xNi45NS0yLjYzIDIuMDJsLS45IDEuNTVoMy45M3YtMi4yNGgtMi45NWMuMzItMS4yNiAxLjMxLTIuMjEgMi41OC0yLjQ4IDEuMjgtLjI3IDIuNjEuMTUgMy40NyAxLjA5em01LjU1IDMuNGgtMy45NWwxLjk3LTMuNDEgMS45OCAzLjQxem0tMS44MiAyLjFsMS45NyAzLjQxIDEuOTctMy40MUgxMi4wNHptMy45Mi0zLjQxbDEuOTctMy40MS0zLjk1LjAxIDEuOTggMy40ek05LjU0IDguN0w3LjU3IDUuMjkgNS42IDguN2gzLjk0eiIvPjwvc3ZnPg==",
+            "GitHub": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNMTIgMGMtNi42MjYgMC0xMiA1LjM3My0xMiAxMiAwIDUuMzAyIDMuNDM4IDkuOCA4LjIwNyAxMS4zODcuNTk5LjExMS43OTMtLjI2MS43OTMtLjU3N3YtMi4yMzRjLTMuMzM4LjcyNi00LjAzMy0xLjQxNi00LjAzMy0xLjQxNi0uNTQ2LTEuMzg3LTEuMzMzLTEuNzU2LTEuMzMzLTEuNzU2LTEuMDg5LS43NDUuMDgzLS43MjkuMDgzLS43MjkgMS4yMDUuMDg0IDEuODM5IDEuMjM3IDEuODM5IDEuMjM3IDEuMDcgMS44MzQgMi44MDcgMS4zMDQgMy40OTIuOTk3LjEwNy0uNzc1LjQxOC0xLjMwNS43NjItMS42MDQtMi42NjUtLjMwNS01LjQ2Ny0xLjMzNC01LjQ2Ny01LjkzMSAwLTEuMzExLjQ2OS0yLjM4MSAxLjIzNi0zLjIyMS0uMTI0LS4zMDMtLjUzNS0xLjUyNC4xMTctMy4xNzYgMCAwIDEuMDA4LS4zMjIgMy4zMDEgMS4yMy45NTctLjI2NiAxLjk4My0uMzk5IDMuMDAzLS40MDQgMS4wMi4wMDUgMi4wNDcuMTM4IDMuMDA2LjQwNCAyLjI5MS0xLjU1MiAzLjI5Ny0xLjIzIDMuMjk3LTEuMjMuNjUzIDEuNjUzLjI0MiAyLjg3NC4xMTggMy4xNzYuNzcuODQgMS4yMzUgMS45MTEgMS4yMzUgMy4yMjEgMCA0LjYwOS0yLjgwNyA1LjYyNC01LjQ3OSA1LjkyMS40My4zNzIuODIzIDEuMTAyLjgyMyAyLjIyMnYzLjI5M2MwIC4zMTkuMTkyLjY5NC44MDEuNTc2IDQuNzY1LTEuNTg5IDguMTk5LTYuMDg2IDguMTk5LTExLjM4NiAwLTYuNjI3LTUuMzczLTEyLTEyLTEyeiIvPjwvc3ZnPg==",
+            "C": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/c/c-original.svg"
         };
         
-        // Fix existing logos
+        // Unconditionally fix specific logos that are known to be broken/invisible
         this.data.skills.forEach(skill => {
-            const name = skill.name.trim();
-            if (name.toLowerCase() === "chatgpt" && skill.imageUrl !== correctLogos["ChatGPT"]) {
+            const name = skill.name.trim().toLowerCase();
+            if (name === "chatgpt" && skill.imageUrl !== correctLogos["ChatGPT"]) {
                 skill.imageUrl = correctLogos["ChatGPT"];
                 skill.name = "ChatGPT";
                 modified = true;
             }
-            if (name.toLowerCase() === "github" && skill.imageUrl !== correctLogos["GitHub"]) {
+            if (name === "github" && skill.imageUrl !== correctLogos["GitHub"]) {
                 skill.imageUrl = correctLogos["GitHub"];
                 skill.name = "GitHub";
+                modified = true;
+            }
+            if (name === "c" && skill.imageUrl !== correctLogos["C"]) {
+                skill.imageUrl = correctLogos["C"];
+                skill.name = "C";
                 modified = true;
             }
         });
