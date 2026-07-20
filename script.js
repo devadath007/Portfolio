@@ -88,18 +88,18 @@ function getSectionTemplate(sectionId, data) {
     if (sectionTemplates[sectionId]) return sectionTemplates[sectionId]();
     if (data.customSections && data.customSections[sectionId]) {
         const custom = data.customSections[sectionId];
-        return \`
-        <section id="\${sectionId}" class="custom-section">
+        return `
+        <section id="${sectionId}" class="custom-section">
             <div class="section-container">
                 <div class="section-header reveal">
-                    <h2>\${custom.title}</h2>
+                    <h2>${custom.title}</h2>
                     <div class="header-line"></div>
                 </div>
                 <div class="custom-content reveal">
-                    <p class="editable-text" id="render-custom-\${sectionId}" data-key="customSections.\${sectionId}.content">\${custom.content || ''}</p>
+                    <p class="editable-text" id="render-custom-${sectionId}" data-key="customSections.${sectionId}.content">${custom.content || ''}</p>
                 </div>
             </div>
-        </section>\`;
+        </section>`;
     }
     return '';
 }
@@ -138,11 +138,11 @@ function buildLayout(data) {
             
             // Last item becomes the button on desktop
             if (idx === layout.length - 1) {
-                deskHtml += \`<a href="#\${sectionId}" class="btn-primary nav-btn">\${title}</a>\`;
+                deskHtml += `<a href="#${sectionId}" class="btn-primary nav-btn">${title}</a>`;
             } else {
-                deskHtml += \`<a href="#\${sectionId}">\${title}</a>\`;
+                deskHtml += `<a href="#${sectionId}">${title}</a>`;
             }
-            mobHtml += \`<a href="#\${sectionId}">\${title}</a>\`;
+            mobHtml += `<a href="#${sectionId}">${title}</a>`;
         });
         
         deskNav.innerHTML = deskHtml;
@@ -175,134 +175,137 @@ function renderContent() {
     }
 
     // About
-    document.getElementById('render-about-bio').textContent = data.about.bio;
+    const aboutBio = document.getElementById('render-about-bio');
+    if (aboutBio && data.about) aboutBio.textContent = data.about.bio;
 
     // Projects
     const projectsContainer = document.getElementById('render-projects-container');
-    projectsContainer.innerHTML = '';
-    data.projects.forEach(p => {
-        const card = `
-            <div class="reveal">
-                <div class="card-new" data-id="${p.id}">
-                <div class="admin-actions-overlay">
-                    <button class="admin-edit-item-btn" onclick="editItem('projects', ${p.id})">Edit</button>
-                    <button class="admin-delete-btn" onclick="deleteItem('projects', ${p.id})">Delete</button>
-                </div>
-                <div class="card-img-wrapper">
-                    <img src="${p.imageUrl}" alt="${p.title}">
-                </div>
-                <div class="card-content">
-                    <div class="card-header">
-                        <h3 class="card-title">${p.title}</h3>
+    if (projectsContainer && data.projects) {
+        projectsContainer.innerHTML = '';
+        data.projects.forEach(p => {
+            const card = `
+                <div class="reveal">
+                    <div class="card-new" data-id="${p.id}">
+                    <div class="admin-actions-overlay">
+                        <button class="admin-edit-item-btn" onclick="editItem('projects', ${p.id})">Edit</button>
+                        <button class="admin-delete-btn" onclick="deleteItem('projects', ${p.id})">Delete</button>
                     </div>
-                    <div class="card-desc-container">
+                    <div class="card-img-wrapper">
+                        <img src="${p.imageUrl}" alt="${p.title}">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3 class="card-title">${p.title}</h3>
+                        </div>
                         <p class="card-desc">${p.description}</p>
-                        ${p.githubUrl ? `
-                            <div style="margin-top: 12px; display: flex; justify-content: flex-start;">
-                                <a href="${p.githubUrl}" target="_blank" class="github-link" title="View Repository">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-github"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" /></svg>
-                                </a>
-                            </div>
-                        ` : ''}
+                        <div class="card-footer">
+                            <a href="${p.githubUrl || '#'}" class="card-btn secondary-btn" ${!p.githubUrl ? 'style="display:none;"' : ''} target="_blank">
+                                <i data-lucide="github"></i> Code
+                            </a>
+                            <a href="${p.externalUrl || '#'}" class="card-btn primary-btn" ${!p.externalUrl ? 'style="display:none;"' : ''} target="_blank">
+                                <i data-lucide="external-link"></i> Live Demo
+                            </a>
+                            ${p.documentData ? `<a href="${p.documentData}" download="Project_Document.pdf" class="card-btn primary-btn"><i data-lucide="download"></i> Download</a>` : ''}
+                        </div>
+                    </div>
                     </div>
                 </div>
-            </div>
-            </div>
-        `;
-        projectsContainer.innerHTML += card;
-    });
+            `;
+            projectsContainer.innerHTML += card;
+        });
+    }
 
     // Certifications
     const certsContainer = document.getElementById('render-certs-container');
-    certsContainer.innerHTML = '';
-    data.certifications.forEach(c => {
-        const card = `
-            <div class="reveal">
-                <div class="card-new" data-id="${c.id}">
-                <div class="admin-actions-overlay">
-                    <button class="admin-edit-item-btn" onclick="editItem('certifications', ${c.id})">Edit</button>
-                    <button class="admin-delete-btn" onclick="deleteItem('certifications', ${c.id})">Delete</button>
-                </div>
-                <div class="card-img-wrapper cert-card-img-wrapper">
-                    <img src="${c.imageUrl}" alt="${c.title}">
-                </div>
-                <div class="card-content">
-                    <div class="card-header">
-                        <h3 class="card-title">${c.title}</h3>
+    if (certsContainer && data.certifications) {
+        certsContainer.innerHTML = '';
+        data.certifications.forEach(c => {
+            const card = `
+                <div class="reveal">
+                    <div class="card-new" data-id="${c.id}">
+                    <div class="admin-actions-overlay">
+                        <button class="admin-edit-item-btn" onclick="editItem('certifications', ${c.id})">Edit</button>
+                        <button class="admin-delete-btn" onclick="deleteItem('certifications', ${c.id})">Delete</button>
                     </div>
-                    <div class="card-desc-container">
+                    <div class="card-img-wrapper">
+                        <img src="${c.imageUrl}" alt="${c.title}">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3 class="card-title">${c.title}</h3>
+                        </div>
                         <p class="card-desc">${c.description}</p>
-                    </div>
-                    ${(c.externalUrl || c.documentData) ? `
                         <div class="card-footer">
-                            <a href="${c.externalUrl || c.documentData}" target="_blank" class="view-doc-btn">
+                            <a href="${c.externalUrl || '#'}" class="card-btn primary-btn" ${!c.externalUrl ? 'style="display:none;"' : ''} target="_blank">
                                 <i data-lucide="external-link"></i> View Credential
                             </a>
+                            ${c.documentData ? `<a href="${c.documentData}" download="${c.title}_Certificate.pdf" class="card-btn primary-btn"><i data-lucide="download"></i> Download PDF</a>` : ''}
                         </div>
-                    ` : ''}
+                    </div>
+                    </div>
                 </div>
-            </div>
-            </div>
-        `;
-        certsContainer.innerHTML += card;
-    });
+            `;
+            certsContainer.innerHTML += card;
+        });
+    }
 
     // Skills
     const skillsContainer = document.getElementById('render-skills-container');
-    skillsContainer.innerHTML = '';
-    
-    data.skills.forEach((s) => {
-        const card = `
-            <div class="reveal">
-                <div class="skill-card" data-id="${s.id}">
-                <div class="admin-actions-overlay">
-                    <button class="admin-edit-btn" onclick="editItem('skills', ${s.id})" style="position:static; margin-bottom:5px;">Edit</button>
-                    <button class="admin-delete-btn" onclick="deleteItem('skills', ${s.id})" style="position:static;">Delete</button>
+    if (skillsContainer && data.skills) {
+        skillsContainer.innerHTML = '';
+        data.skills.forEach((s) => {
+            const card = `
+                <div class="reveal">
+                    <div class="skill-card" data-id="${s.id}">
+                    <div class="admin-actions-overlay">
+                        <button class="admin-edit-btn" onclick="editItem('skills', ${s.id})" style="position:static; margin-bottom:5px;">Edit</button>
+                        <button class="admin-delete-btn" onclick="deleteItem('skills', ${s.id})" style="position:static;">Delete</button>
+                    </div>
+                    <img src="${s.imageUrl}" alt="${s.name}" class="skill-icon-img">
+                    <h4>${s.name}</h4>
+                    <p>${s.label}</p>
+                    </div>
                 </div>
-                <img src="${s.imageUrl}" alt="${s.name}" class="skill-icon-img">
-                <h4>${s.name}</h4>
-                <p>${s.label}</p>
-                </div>
-            </div>
-        `;
-        skillsContainer.innerHTML += card;
-    });
+            `;
+            skillsContainer.innerHTML += card;
+        });
+    }
 
     // Contact & Footer
     const contactMethodsContainer = document.getElementById('render-contact-methods');
-    if (contactMethodsContainer) {
+    if (contactMethodsContainer && data.contact) {
         contactMethodsContainer.innerHTML = '';
         if (data.contact.email) {
-            contactMethodsContainer.innerHTML += \`
-                <a href="mailto:\${data.contact.email}" class="contact-method">
+            contactMethodsContainer.innerHTML += `
+                <a href="mailto:${data.contact.email}" class="contact-method">
                     <i data-lucide="mail"></i>
-                    <span>\${data.contact.email}</span>
+                    <span>${data.contact.email}</span>
                 </a>
-            \`;
+            `;
         }
         if (data.contact.github) {
-            contactMethodsContainer.innerHTML += \`
-                <a href="\${data.contact.github}" target="_blank" class="contact-method">
+            contactMethodsContainer.innerHTML += `
+                <a href="${data.contact.github}" target="_blank" class="contact-method">
                     <i data-lucide="github"></i>
                     <span>github.com</span>
                 </a>
-            \`;
+            `;
         }
         if (data.contact.linkedin) {
-            contactMethodsContainer.innerHTML += \`
-                <a href="\${data.contact.linkedin}" target="_blank" class="contact-method">
+            contactMethodsContainer.innerHTML += `
+                <a href="${data.contact.linkedin}" target="_blank" class="contact-method">
                     <i data-lucide="linkedin"></i>
                     <span>linkedin.com</span>
                 </a>
-            \`;
+            `;
         }
         if (data.contact.instagram) {
-            contactMethodsContainer.innerHTML += \`
-                <a href="\${data.contact.instagram}" target="_blank" class="contact-method">
+            contactMethodsContainer.innerHTML += `
+                <a href="${data.contact.instagram}" target="_blank" class="contact-method">
                     <i data-lucide="instagram"></i>
                     <span>instagram.com</span>
                 </a>
-            \`;
+            `;
         }
     }
 
@@ -708,10 +711,10 @@ function initAdminLogic() {
             let title = id.toUpperCase();
             if(data.customSections && data.customSections[id]) title = data.customSections[id].title;
             
-            div.innerHTML = \`
-                <span><i data-lucide="grip-vertical" style="margin-right: 10px; width: 16px; opacity: 0.5;"></i> \${title}</span>
+            div.innerHTML = `
+                <span><i data-lucide="grip-vertical" style="margin-right: 10px; width: 16px; opacity: 0.5;"></i> ${title}</span>
                 <button type="button" class="btn-cancel delete-layout-item" style="padding: 4px 8px; font-size: 0.8rem;">Remove</button>
-            \`;
+            `;
             layoutSortableList.appendChild(div);
         });
         if(window.lucide) window.lucide.createIcons();
@@ -769,10 +772,10 @@ function initAdminLogic() {
             div.className = 'admin-layout-item';
             div.dataset.id = sectionId;
             div.style.cssText = 'padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; cursor: grab; display: flex; justify-content: space-between; align-items: center; color: white;';
-            div.innerHTML = \`
-                <span><i data-lucide="grip-vertical" style="margin-right: 10px; width: 16px; opacity: 0.5;"></i> \${title}</span>
+            div.innerHTML = `
+                <span><i data-lucide="grip-vertical" style="margin-right: 10px; width: 16px; opacity: 0.5;"></i> ${title}</span>
                 <button type="button" class="btn-cancel delete-layout-item" style="padding: 4px 8px; font-size: 0.8rem;">Remove</button>
-            \`;
+            `;
             layoutSortableList.appendChild(div);
             if(window.lucide) window.lucide.createIcons();
             
