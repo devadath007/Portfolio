@@ -112,6 +112,16 @@ export class PortfolioDataManager {
                 this.data = localData ? JSON.parse(localData) : JSON.parse(JSON.stringify(defaultPortfolioData));
                 await setDoc(docRef, this.data);
             }
+
+            // Apply patch for new skills and logos
+            if (this.patchData()) {
+                console.log("Applied skills patch. Saving to Firebase...");
+                try {
+                    await setDoc(doc(db, "portfolio", "data"), this.data);
+                    localStorage.setItem(this.storageKey, JSON.stringify(this.data));
+                } catch(e) {}
+            }
+
         } catch (e) {
             console.error("Error connecting to Firebase:", e);
             // Fallback to local storage
@@ -139,6 +149,53 @@ export class PortfolioDataManager {
 
     getData() {
         return this.data;
+    }
+
+    patchData() {
+        if (!this.data || !this.data.skills) return false;
+        let modified = false;
+
+        const correctLogos = {
+            "ChatGPT": "https://cdn.worldvectorlogo.com/logos/chatgpt-4.svg",
+            "GitHub": "https://cdn.worldvectorlogo.com/logos/github-icon-1.svg"
+        };
+        
+        // Fix existing logos
+        this.data.skills.forEach(skill => {
+            const name = skill.name.trim();
+            if (name.toLowerCase() === "chatgpt" && skill.imageUrl !== correctLogos["ChatGPT"]) {
+                skill.imageUrl = correctLogos["ChatGPT"];
+                skill.name = "ChatGPT";
+                modified = true;
+            }
+            if (name.toLowerCase() === "github" && skill.imageUrl !== correctLogos["GitHub"]) {
+                skill.imageUrl = correctLogos["GitHub"];
+                skill.name = "GitHub";
+                modified = true;
+            }
+        });
+
+        const requiredSkills = [
+            { name: "Postman", label: "Tools", imageUrl: "https://www.vectorlogo.zone/logos/getpostman/getpostman-icon.svg" },
+            { name: "C", label: "Language", imageUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/c/c-original.svg" },
+            { name: "C++", label: "Language", imageUrl: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cplusplus/cplusplus-original.svg" },
+            { name: "Arduino", label: "Hardware", imageUrl: "https://cdn.worldvectorlogo.com/logos/arduino-1.svg" }
+        ];
+
+        requiredSkills.forEach(req => {
+            const exists = this.data.skills.find(s => s.name.toLowerCase() === req.name.toLowerCase());
+            if (!exists) {
+                this.data.skills.push({
+                    id: Date.now() + Math.floor(Math.random() * 1000),
+                    name: req.name,
+                    label: req.label,
+                    imageUrl: req.imageUrl
+                });
+                modified = true;
+            }
+        });
+
+        return modified;
     }
 }
 
