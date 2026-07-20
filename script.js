@@ -183,34 +183,34 @@ function renderContent() {
     if (projectsContainer && data.projects) {
         projectsContainer.innerHTML = '';
         data.projects.forEach(p => {
-            const card = \`
+            const card = `
                 <div class="reveal">
-                    <div class="card-new" data-id="\${p.id}">
+                    <div class="card-new" data-id="${p.id}">
                     <div class="admin-actions-overlay">
-                        <button class="admin-edit-item-btn" onclick="editItem('projects', \${p.id})">Edit</button>
-                        <button class="admin-delete-btn" onclick="deleteItem('projects', \${p.id})">Delete</button>
+                        <button class="admin-edit-item-btn" onclick="editItem('projects', ${p.id})">Edit</button>
+                        <button class="admin-delete-btn" onclick="deleteItem('projects', ${p.id})">Delete</button>
                     </div>
                     <div class="card-img-wrapper">
-                        <img src="\${p.imageUrl}" alt="\${p.title}">
+                        <img src="${p.imageUrl}" alt="${p.title}">
                     </div>
                     <div class="card-content">
                         <div class="card-header">
-                            <h3 class="card-title">\${p.title}</h3>
+                            <h3 class="card-title">${p.title}</h3>
                         </div>
                         <div class="card-desc-container">
-                            <p class="card-desc">\${p.description}</p>
-                            \${p.githubUrl ? \`
+                            <p class="card-desc">${p.description}</p>
+                            ${p.githubUrl ? `
                                 <div style="margin-top: 12px; display: flex; justify-content: flex-start;">
-                                    <a href="\${p.githubUrl}" target="_blank" class="github-link" title="View Repository">
+                                    <a href="${p.githubUrl}" target="_blank" class="github-link" title="View Repository">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-github"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" /><path d="M9 18c-4.51 2-5-2-7-2" /></svg>
                                     </a>
                                 </div>
-                            \` : ''}
+                            ` : ''}
                         </div>
                     </div>
                     </div>
                 </div>
-            \`;
+            `;
             projectsContainer.innerHTML += card;
         });
     }
@@ -220,34 +220,34 @@ function renderContent() {
     if (certsContainer && data.certifications) {
         certsContainer.innerHTML = '';
         data.certifications.forEach(c => {
-            const card = \`
+            const card = `
                 <div class="reveal">
-                    <div class="card-new" data-id="\${c.id}">
+                    <div class="card-new" data-id="${c.id}">
                     <div class="admin-actions-overlay">
-                        <button class="admin-edit-item-btn" onclick="editItem('certifications', \${c.id})">Edit</button>
-                        <button class="admin-delete-btn" onclick="deleteItem('certifications', \${c.id})">Delete</button>
+                        <button class="admin-edit-item-btn" onclick="editItem('certifications', ${c.id})">Edit</button>
+                        <button class="admin-delete-btn" onclick="deleteItem('certifications', ${c.id})">Delete</button>
                     </div>
                     <div class="card-img-wrapper cert-card-img-wrapper">
-                        <img src="\${c.imageUrl}" alt="\${c.title}">
+                        <img src="${c.imageUrl}" alt="${c.title}">
                     </div>
                     <div class="card-content">
                         <div class="card-header">
-                            <h3 class="card-title">\${c.title}</h3>
+                            <h3 class="card-title">${c.title}</h3>
                         </div>
                         <div class="card-desc-container">
-                            <p class="card-desc">\${c.description}</p>
+                            <p class="card-desc">${c.description}</p>
                         </div>
-                        \${(c.externalUrl || c.documentData) ? \`
+                        ${(c.externalUrl || c.documentData) ? `
                             <div class="card-footer">
-                                <a href="\${c.externalUrl || c.documentData}" target="_blank" class="view-doc-btn">
+                                <a href="${c.externalUrl || c.documentData}" target="_blank" class="view-doc-btn">
                                     <i data-lucide="external-link"></i> View Credential
                                 </a>
                             </div>
-                        \` : ''}
+                        ` : ''}
                     </div>
                     </div>
                 </div>
-            \`;
+            `;
             certsContainer.innerHTML += card;
         });
     }
@@ -257,19 +257,19 @@ function renderContent() {
     if (skillsContainer && data.skills) {
         skillsContainer.innerHTML = '';
         data.skills.forEach((s) => {
-            const card = \`
+            const card = `
                 <div class="reveal">
-                    <div class="skill-card" data-id="\${s.id}">
+                    <div class="skill-card" data-id="${s.id}">
                     <div class="admin-actions-overlay">
-                        <button class="admin-edit-btn" onclick="editItem('skills', \${s.id})" style="position:static; margin-bottom:5px;">Edit</button>
-                        <button class="admin-delete-btn" onclick="deleteItem('skills', \${s.id})" style="position:static;">Delete</button>
+                        <button class="admin-edit-btn" onclick="editItem('skills', ${s.id})" style="position:static; margin-bottom:5px;">Edit</button>
+                        <button class="admin-delete-btn" onclick="deleteItem('skills', ${s.id})" style="position:static;">Delete</button>
                     </div>
-                    <img src="\${s.imageUrl}" alt="\${s.name}" class="skill-icon-img">
-                    <h4>\${s.name}</h4>
-                    <p>\${s.label}</p>
+                    <img src="${s.imageUrl}" alt="${s.name}" class="skill-icon-img">
+                    <h4>${s.name}</h4>
+                    <p>${s.label}</p>
                     </div>
                 </div>
-            \`;
+            `;
             skillsContainer.innerHTML += card;
         });
     }
@@ -279,36 +279,36 @@ function renderContent() {
     if (contactMethodsContainer && data.contact) {
         contactMethodsContainer.innerHTML = '';
         if (data.contact.email) {
-            contactMethodsContainer.innerHTML += \`
-                <a href="mailto:\${data.contact.email}" class="contact-method">
+            contactMethodsContainer.innerHTML += `
+                <a href="mailto:${data.contact.email}" class="contact-method">
                     <i data-lucide="mail"></i>
-                    <span>\${data.contact.email}</span>
+                    <span>${data.contact.email}</span>
                 </a>
-            \`;
+            `;
         }
         if (data.contact.github) {
-            contactMethodsContainer.innerHTML += \`
-                <a href="\${data.contact.github}" target="_blank" class="contact-method">
+            contactMethodsContainer.innerHTML += `
+                <a href="${data.contact.github}" target="_blank" class="contact-method">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-github"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" /><path d="M9 18c-4.51 2-5-2-7-2" /></svg>
                     <span>github.com</span>
                 </a>
-            \`;
+            `;
         }
         if (data.contact.linkedin) {
-            contactMethodsContainer.innerHTML += \`
-                <a href="\${data.contact.linkedin}" target="_blank" class="contact-method">
+            contactMethodsContainer.innerHTML += `
+                <a href="${data.contact.linkedin}" target="_blank" class="contact-method">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-linkedin"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" /><rect width="4" height="12" x="2" y="9" /><circle cx="4" cy="4" r="2" /></svg>
                     <span>linkedin.com</span>
                 </a>
-            \`;
+            `;
         }
         if (data.contact.instagram) {
-            contactMethodsContainer.innerHTML += \`
-                <a href="\${data.contact.instagram}" target="_blank" class="contact-method">
+            contactMethodsContainer.innerHTML += `
+                <a href="${data.contact.instagram}" target="_blank" class="contact-method">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                     <span>instagram.com</span>
                 </a>
-            \`;
+            `;
         }
     }
 
