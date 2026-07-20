@@ -164,7 +164,7 @@ function renderContent() {
     const heroImgWrapper = document.getElementById('render-hero-image');
     if (heroImgWrapper) {
         if (data.hero.imageUrl) {
-            heroImgWrapper.innerHTML = `<img src="${data.hero.imageUrl}" alt="Profile Picture" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+            heroImgWrapper.innerHTML = `<img src="${data.hero.imageUrl}" alt="Profile Picture" style="width:100%; height:100%; object-fit:cover; border-radius:50%; animation: fadeIn 0.5s ease-in-out;">`;
         } else {
             heroImgWrapper.innerHTML = `
                 <div class="profile-placeholder">
