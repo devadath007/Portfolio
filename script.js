@@ -1,8 +1,160 @@
 import { portfolioManager } from './data.js?v=4';
 
 // --- STATE RENDERING LOGIC ---
+const sectionTemplates = {
+    'about': () => `
+        <section id="about" class="about">
+            <div class="section-container">
+                <div class="section-header reveal">
+                    <h2>About Me</h2>
+                    <div class="header-line"></div>
+                </div>
+                <div class="about-content" style="grid-template-columns: 1fr;">
+                    <div class="about-text">
+                        <p class="editable-text" id="render-about-bio" data-key="about.bio"></p>
+                    </div>
+                </div>
+            </div>
+        </section>`,
+    'portfolio': () => `
+        <section id="portfolio" class="portfolio">
+            <div class="section-container">
+                <div class="section-header reveal">
+                    <h2>Featured Projects</h2>
+                    <div class="header-line"></div>
+                    <button class="admin-add-btn" id="add-project-btn" style="display:none;">+ Add Project</button>
+                </div>
+                <div class="projects-grid-new" id="render-projects-container"></div>
+            </div>
+        </section>`,
+    'certs': () => `
+        <section id="certs" class="certs">
+            <div class="section-container">
+                <div class="section-header reveal">
+                    <h2>Experience & Certifications</h2>
+                    <div class="header-line"></div>
+                    <button class="admin-add-btn" id="add-cert-btn" style="display:none;">+ Add Cert</button>
+                </div>
+                <div class="projects-grid-new" id="render-certs-container"></div>
+            </div>
+        </section>`,
+    'skills': () => `
+        <section id="skills" class="skills">
+            <div class="section-container">
+                <div class="section-header reveal">
+                    <h2>Technologies I work with</h2>
+                    <div class="header-line"></div>
+                    <button class="admin-add-btn" id="add-skill-btn" style="display:none;">+ Add Skill</button>
+                </div>
+                <div class="skills-grid-new" id="render-skills-container"></div>
+            </div>
+        </section>`,
+    'contact': () => `
+        <section id="contact" class="contact">
+            <div class="section-container">
+                <div class="section-header reveal">
+                    <h2>Get In Touch</h2>
+                    <div class="header-line"></div>
+                    <button class="admin-edit-btn" id="edit-contact-btn" style="display:none;">Edit Contact Info</button>
+                </div>
+                <div class="contact-wrapper">
+                    <div class="contact-info">
+                        <h3>Let's build something together.</h3>
+                        <p>I'm currently looking for new opportunities and collaborations. Whether you have a question or just want to say hi, my inbox is always open.</p>
+                        <div class="contact-methods" id="render-contact-methods">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+                    <form id="contact-form" action="https://formsubmit.co/ajax/devadath754@gmail.com" method="POST" class="contact-form">
+                        <input type="hidden" name="_subject" value="New Portfolio Contact Message!">
+                        <input type="hidden" name="_template" value="box">
+                        <input type="hidden" name="_captcha" value="false">
+                        <div class="form-group"><input type="text" name="name" placeholder="Your Name" required></div>
+                        <div class="form-group"><input type="email" name="email" placeholder="Your Email" required></div>
+                        <div class="form-group"><input type="text" name="subject" placeholder="Subject" required></div>
+                        <div class="form-group"><textarea name="message" rows="5" placeholder="Your Message" required></textarea></div>
+                        <button type="submit" id="contact-submit-btn" class="btn-primary submit-btn" style="width: 100%; justify-content: center; gap: 8px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                            <span>Send Message</span>
+                        </button>
+                        <p id="contact-status" style="display:none; text-align:center; font-size: 0.9rem; margin-top: 10px;"></p>
+                    </form>
+                </div>
+            </div>
+        </section>`
+};
+
+function getSectionTemplate(sectionId, data) {
+    if (sectionTemplates[sectionId]) return sectionTemplates[sectionId]();
+    if (data.customSections && data.customSections[sectionId]) {
+        const custom = data.customSections[sectionId];
+        return \`
+        <section id="\${sectionId}" class="custom-section">
+            <div class="section-container">
+                <div class="section-header reveal">
+                    <h2>\${custom.title}</h2>
+                    <div class="header-line"></div>
+                </div>
+                <div class="custom-content reveal">
+                    <p class="editable-text" id="render-custom-\${sectionId}" data-key="customSections.\${sectionId}.content">\${custom.content || ''}</p>
+                </div>
+            </div>
+        </section>\`;
+    }
+    return '';
+}
+
+function buildLayout(data) {
+    const container = document.getElementById('dynamic-layout');
+    if (!container) return;
+    
+    const layoutStr = JSON.stringify(data.layout || []);
+    if (container.dataset.layout === layoutStr) return;
+    
+    container.innerHTML = '';
+    const layout = data.layout || ['about', 'portfolio', 'certs', 'skills', 'contact'];
+    
+    // Build Sections
+    layout.forEach(sectionId => {
+        const div = document.createElement('div');
+        div.innerHTML = getSectionTemplate(sectionId, data);
+        if (div.firstElementChild) {
+            container.appendChild(div.firstElementChild);
+        }
+    });
+    
+    // Build Nav Links
+    const deskNav = document.getElementById('desktop-nav-links');
+    const mobNav = document.getElementById('mobile-nav-links');
+    if (deskNav && mobNav) {
+        let deskHtml = '<a href="#home">Home</a>';
+        let mobHtml = '<a href="#home">Home</a>';
+        
+        layout.forEach((sectionId, idx) => {
+            let title = sectionId.charAt(0).toUpperCase() + sectionId.slice(1);
+            if (sectionId === 'portfolio') title = 'Projects';
+            if (sectionId === 'certs') title = 'Certifications';
+            if (data.customSections && data.customSections[sectionId]) title = data.customSections[sectionId].title;
+            
+            // Last item becomes the button on desktop
+            if (idx === layout.length - 1) {
+                deskHtml += \`<a href="#\${sectionId}" class="btn-primary nav-btn">\${title}</a>\`;
+            } else {
+                deskHtml += \`<a href="#\${sectionId}">\${title}</a>\`;
+            }
+            mobHtml += \`<a href="#\${sectionId}">\${title}</a>\`;
+        });
+        
+        deskNav.innerHTML = deskHtml;
+        mobNav.innerHTML = mobHtml;
+    }
+    
+    container.dataset.layout = layoutStr;
+}
+
 function renderContent() {
     const data = window.portfolioManager.getData();
+    buildLayout(data);
 
     // Hero
     document.getElementById('render-hero-name').textContent = data.hero.name;
@@ -117,10 +269,42 @@ function renderContent() {
     });
 
     // Contact & Footer
-    document.getElementById('render-contact-email').querySelector('span').textContent = data.contact.email;
-    document.getElementById('render-contact-email').href = `mailto:${data.contact.email}`;
-    document.getElementById('render-contact-github').href = data.contact.github;
-    document.getElementById('render-contact-linkedin').href = data.contact.linkedin;
+    const contactMethodsContainer = document.getElementById('render-contact-methods');
+    if (contactMethodsContainer) {
+        contactMethodsContainer.innerHTML = '';
+        if (data.contact.email) {
+            contactMethodsContainer.innerHTML += \`
+                <a href="mailto:\${data.contact.email}" class="contact-method">
+                    <i data-lucide="mail"></i>
+                    <span>\${data.contact.email}</span>
+                </a>
+            \`;
+        }
+        if (data.contact.github) {
+            contactMethodsContainer.innerHTML += \`
+                <a href="\${data.contact.github}" target="_blank" class="contact-method">
+                    <i data-lucide="github"></i>
+                    <span>github.com</span>
+                </a>
+            \`;
+        }
+        if (data.contact.linkedin) {
+            contactMethodsContainer.innerHTML += \`
+                <a href="\${data.contact.linkedin}" target="_blank" class="contact-method">
+                    <i data-lucide="linkedin"></i>
+                    <span>linkedin.com</span>
+                </a>
+            \`;
+        }
+        if (data.contact.instagram) {
+            contactMethodsContainer.innerHTML += \`
+                <a href="\${data.contact.instagram}" target="_blank" class="contact-method">
+                    <i data-lucide="instagram"></i>
+                    <span>instagram.com</span>
+                </a>
+            \`;
+        }
+    }
 
     // Re-initialize icons
     if (window.lucide) {
@@ -156,6 +340,14 @@ function openCustomPrompt(options, callback) {
         i2.value = options.val2 || '';
         i2.required = false;
     } else { g2.style.display = 'none'; i2.required = false; }
+    
+    const g4 = newForm.querySelector('#prompt-group-4');
+    const i4 = newForm.querySelector('#prompt-input-4');
+    if (options.label4) {
+        g4.style.display = 'block';
+        i4.placeholder = options.label4;
+        i4.value = options.val4 || '';
+    } else { g4.style.display = 'none'; }
     
     const gImg = newForm.querySelector('#prompt-group-image');
     const iImgUrl = newForm.querySelector('#prompt-input-image-url');
@@ -223,12 +415,13 @@ function openCustomPrompt(options, callback) {
         e.preventDefault();
         const val1 = i1.value;
         const val2 = i2.value;
+        const val4 = i4 ? i4.value : '';
         const externalUrl = iExtUrl.value;
         const githubUrl = iGit.value;
         
         const finalize = (finalImgVal) => {
             modal.style.display = 'none';
-            callback(val1, val2, finalImgVal, externalUrl, uploadedDocData, githubUrl);
+            callback(val1, val2, finalImgVal, externalUrl, uploadedDocData, githubUrl, val4);
         };
         
         if (gImg.style.display !== 'none' && iImgFile.files && iImgFile.files[0]) {
@@ -497,6 +690,102 @@ function initAdminLogic() {
         setTimeout(() => { btn.textContent = "Save Changes"; }, 2000);
     });
 
+    // Manage Layout Logic
+    const layoutModal = document.getElementById('manage-layout-modal');
+    const layoutSortableList = document.getElementById('layout-sortable-list');
+    
+    document.getElementById('manage-layout-btn').addEventListener('click', () => {
+        const data = window.portfolioManager.getData();
+        const layout = data.layout || ['about', 'portfolio', 'certs', 'skills', 'contact'];
+        
+        layoutSortableList.innerHTML = '';
+        layout.forEach(id => {
+            const div = document.createElement('div');
+            div.className = 'admin-layout-item';
+            div.dataset.id = id;
+            div.style.cssText = 'padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; cursor: grab; display: flex; justify-content: space-between; align-items: center; color: white;';
+            
+            let title = id.toUpperCase();
+            if(data.customSections && data.customSections[id]) title = data.customSections[id].title;
+            
+            div.innerHTML = \`
+                <span><i data-lucide="grip-vertical" style="margin-right: 10px; width: 16px; opacity: 0.5;"></i> \${title}</span>
+                <button type="button" class="btn-cancel delete-layout-item" style="padding: 4px 8px; font-size: 0.8rem;">Remove</button>
+            \`;
+            layoutSortableList.appendChild(div);
+        });
+        if(window.lucide) window.lucide.createIcons();
+        
+        if (window.layoutSortable) window.layoutSortable.destroy();
+        window.layoutSortable = new Sortable(layoutSortableList, {
+            animation: 150,
+            handle: '.admin-layout-item',
+            ghostClass: 'sortable-ghost'
+        });
+        
+        layoutModal.style.display = 'flex';
+    });
+
+    document.getElementById('close-layout-btn').addEventListener('click', () => {
+        layoutModal.style.display = 'none';
+    });
+    
+    document.getElementById('save-layout-btn').addEventListener('click', () => {
+        const data = window.portfolioManager.getData();
+        const newLayout = Array.from(layoutSortableList.children).map(el => el.dataset.id);
+        data.layout = newLayout;
+        window.portfolioManager.saveData(data);
+        layoutModal.style.display = 'none';
+        
+        // Clear dataset layout to force rebuild
+        const container = document.getElementById('dynamic-layout');
+        if (container) container.dataset.layout = '';
+        renderContent();
+    });
+
+    layoutSortableList.addEventListener('click', (e) => {
+        if (e.target.classList.contains('delete-layout-item')) {
+            e.target.closest('.admin-layout-item').remove();
+        }
+    });
+
+    document.getElementById('add-custom-section-btn').addEventListener('click', () => {
+        layoutModal.style.display = 'none'; // Hide temporarily while custom prompt is open
+        openCustomPrompt({
+            title: "Add Custom Section",
+            label1: "Section Title (e.g. Education)",
+            label2: "Content (Text)",
+            showFileUpload: false
+        }, (title, content) => {
+            layoutModal.style.display = 'flex'; // Re-show layout modal
+            if (!title) return;
+            const data = window.portfolioManager.getData();
+            if (!data.customSections) data.customSections = {};
+            const sectionId = 'custom_' + Date.now();
+            data.customSections[sectionId] = { title, content };
+            
+            // Add to list visually
+            const div = document.createElement('div');
+            div.className = 'admin-layout-item';
+            div.dataset.id = sectionId;
+            div.style.cssText = 'padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; cursor: grab; display: flex; justify-content: space-between; align-items: center; color: white;';
+            div.innerHTML = \`
+                <span><i data-lucide="grip-vertical" style="margin-right: 10px; width: 16px; opacity: 0.5;"></i> \${title}</span>
+                <button type="button" class="btn-cancel delete-layout-item" style="padding: 4px 8px; font-size: 0.8rem;">Remove</button>
+            \`;
+            layoutSortableList.appendChild(div);
+            if(window.lucide) window.lucide.createIcons();
+            
+            // Re-bind sortable
+            if (window.layoutSortable) window.layoutSortable.destroy();
+            window.layoutSortable = new Sortable(layoutSortableList, {
+                animation: 150,
+                handle: '.admin-layout-item',
+                ghostClass: 'sortable-ghost'
+            });
+        });
+    });
+
     // Inline Add Buttons
     document.getElementById('add-project-btn').addEventListener('click', () => {
         openCustomPrompt({
@@ -597,12 +886,15 @@ function initAdminLogic() {
                 val2: data.contact.github,
                 label3: "LinkedIn URL",
                 val3: data.contact.linkedin,
+                label4: "Instagram URL",
+                val4: data.contact.instagram,
                 showFileUpload: false
-            }, (email, github, linkedin) => {
+            }, (email, github, linkedin, ext, doc, git, instagram) => {
                 if(!email) return;
                 data.contact.email = email;
                 data.contact.github = github || "#";
                 data.contact.linkedin = linkedin || "#";
+                data.contact.instagram = instagram || "";
                 window.portfolioManager.saveData(data);
                 renderContent();
             });

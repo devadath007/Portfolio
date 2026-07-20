@@ -79,8 +79,11 @@ const defaultPortfolioData = {
     contact: {
         email: "devadath754@gmail.com",
         github: "https://github.com/ridern386",
-        linkedin: "https://www.linkedin.com/in/devadath-a-s/"
-    }
+        linkedin: "https://www.linkedin.com/in/devadath-a-s/",
+        instagram: "https://instagram.com/yourprofile"
+    },
+    layout: ['about', 'portfolio', 'certs', 'skills', 'contact'],
+    customSections: {}
 };
 
 export class PortfolioDataManager {
