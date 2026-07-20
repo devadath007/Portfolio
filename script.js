@@ -655,10 +655,14 @@ function initContactForm() {
 
 // --- STANDARD UI LOGIC ---
 async function bootstrap() {
-    // Instantly trigger load animations before waiting for Firebase
+    // 1. Instantly render from local cache so the profile picture is there immediately
+    renderContent();
+    // 2. Instantly trigger load animations
     document.body.classList.add('run-animation');
     
+    // 3. Fetch from Firebase to ensure we have latest data
     await portfolioManager.init();
+    // 4. Re-render just in case Firebase had newer data
     renderContent();
     initContactForm();
     initAdminLogic();

@@ -86,7 +86,8 @@ const defaultPortfolioData = {
 export class PortfolioDataManager {
     constructor() {
         this.storageKey = 'portfolio_data_v2'; 
-        this.data = null;
+        const localData = localStorage.getItem(this.storageKey);
+        this.data = localData ? JSON.parse(localData) : JSON.parse(JSON.stringify(defaultPortfolioData));
     }
 
     async init() {
