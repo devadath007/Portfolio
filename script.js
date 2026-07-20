@@ -96,7 +96,7 @@ function renderContent() {
     skillsContainer.innerHTML = '';
     
     data.skills.forEach((s, index) => {
-        const delay = index * 0.1; // Staggered delay for each card
+        const delay = Math.min(index * 0.05, 0.4); // Faster staggered delay, capped at 0.4s
         const card = `
             <div class="skill-card" data-id="${s.id}" style="animation-delay: ${delay}s;">
                 <div class="admin-actions-overlay">
