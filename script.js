@@ -44,14 +44,14 @@ function renderContent() {
                     </div>
                     <div class="card-desc-container">
                         <p class="card-desc">${p.description}</p>
+                        ${p.githubUrl ? `
+                            <div style="margin-top: 12px; display: flex; justify-content: flex-start;">
+                                <a href="${p.githubUrl}" target="_blank" class="github-link" title="View Repository">
+                                    <i data-lucide="github"></i>
+                                </a>
+                            </div>
+                        ` : ''}
                     </div>
-                    ${p.githubUrl ? `
-                        <div class="card-footer">
-                            <a href="${p.githubUrl}" target="_blank" class="view-doc-btn">
-                                <i data-lucide="github"></i> View Repository
-                            </a>
-                        </div>
-                    ` : ''}
                 </div>
             </div>
         `;
