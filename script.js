@@ -1,4 +1,4 @@
-import { portfolioManager } from './data.js';
+import { portfolioManager } from './data.js?v=4';
 
 // --- STATE RENDERING LOGIC ---
 function renderContent() {
@@ -240,7 +240,7 @@ function openCustomPrompt(options, callback) {
                     canvas.width = width; canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
-                    finalize(canvas.toDataURL('image/webp', 0.8));
+                    finalize(canvas.toDataURL('image/png'));
                 };
                 img.src = evt.target.result;
             };
