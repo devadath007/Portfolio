@@ -39,13 +39,19 @@ function renderContent() {
                     <img src="${p.imageUrl}" alt="${p.title}">
                 </div>
                 <div class="card-content">
-                    <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div class="card-header">
                         <h3 class="card-title">${p.title}</h3>
-                        ${p.githubUrl ? `<a href="${p.githubUrl}" target="_blank" class="github-link"><i data-lucide="github"></i></a>` : ''}
                     </div>
                     <div class="card-desc-container">
                         <p class="card-desc">${p.description}</p>
                     </div>
+                    ${p.githubUrl ? `
+                        <div class="card-footer">
+                            <a href="${p.githubUrl}" target="_blank" class="view-doc-btn">
+                                <i data-lucide="github"></i> View Repository
+                            </a>
+                        </div>
+                    ` : ''}
                 </div>
             </div>
         `;
