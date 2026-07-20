@@ -610,10 +610,54 @@ function initAdminLogic() {
     }
 }
 
+function initContactForm() {
+    const form = document.getElementById('contact-form');
+    const status = document.getElementById('contact-status');
+    const btn = document.getElementById('contact-submit-btn');
+    if (!form) return;
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const originalBtnText = btn.innerHTML;
+        btn.innerHTML = 'Sending...';
+        btn.disabled = true;
+
+        fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form),
+            headers: {
+                'Accept': 'application/json'
+            }
+        }).then(response => {
+            if (response.ok) {
+                status.textContent = 'Message sent successfully!';
+                status.style.color = '#4ade80'; // success green
+                status.style.display = 'block';
+                form.reset();
+            } else {
+                status.textContent = 'Oops! There was a problem sending your message.';
+                status.style.color = '#f87171'; // error red
+                status.style.display = 'block';
+            }
+        }).catch(error => {
+            status.textContent = 'Oops! There was a problem sending your message.';
+            status.style.color = '#f87171';
+            status.style.display = 'block';
+        }).finally(() => {
+            btn.innerHTML = originalBtnText;
+            btn.disabled = false;
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 5000);
+        });
+    });
+}
+
 // --- STANDARD UI LOGIC ---
 async function bootstrap() {
     await portfolioManager.init();
     renderContent();
+    initContactForm();
     initAdminLogic();
 
     document.getElementById('year').textContent = new Date().getFullYear();
