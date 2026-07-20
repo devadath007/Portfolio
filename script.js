@@ -655,6 +655,9 @@ function initContactForm() {
 
 // --- STANDARD UI LOGIC ---
 async function bootstrap() {
+    // Instantly trigger load animations before waiting for Firebase
+    document.body.classList.add('run-animation');
+    
     await portfolioManager.init();
     renderContent();
     initContactForm();
@@ -708,8 +711,6 @@ async function bootstrap() {
     const revealOptions = { threshold: 0.15, rootMargin: "0px 0px -50px 0px" };
     const revealObserver = new IntersectionObserver(revealCallback, revealOptions);
     revealElements.forEach(el => revealObserver.observe(el));
-    
-    document.body.classList.add('run-animation');
 }
 
 if (document.readyState === 'loading') {
