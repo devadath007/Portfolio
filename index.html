@@ -232,32 +232,63 @@
 
     <!-- CUSTOM PROMPT MODAL FOR FILE UPLOADS & ADDING ITEMS -->
     <div class="admin-modal-overlay" id="custom-prompt-modal" style="display: none; z-index: 999999;">
-        <div class="admin-modal">
+        <div class="admin-modal new-design-modal">
             <div class="modal-header">
-                <h3 id="custom-prompt-title">Add Item</h3>
-                <button class="close-modal-btn" id="close-prompt-btn" type="button"><i data-lucide="x"></i></button>
+                <h3 id="custom-prompt-title">Edit Item</h3>
+                <!-- Close btn removed from top right to match screenshot clean look, handled by Cancel button -->
             </div>
             <div class="modal-body">
-                <form id="custom-prompt-form">
+                <form id="custom-prompt-form" class="new-modal-form">
+                    
                     <div class="form-group" id="prompt-group-1">
-                        <label id="prompt-label-1">Title</label>
-                        <input type="text" id="prompt-input-1">
+                        <input type="text" id="prompt-input-1" placeholder="Title" class="modern-input" required>
                     </div>
+                    
                     <div class="form-group" id="prompt-group-2">
-                        <label id="prompt-label-2">Description</label>
-                        <textarea id="prompt-input-2" rows="3"></textarea>
+                        <textarea id="prompt-input-2" rows="4" placeholder="Description" class="modern-input"></textarea>
                     </div>
-                    <div class="form-group" id="prompt-group-3">
-                        <label id="prompt-label-3">Image URL</label>
-                        <input type="text" id="prompt-input-3">
+
+                    <div class="form-group" id="prompt-group-image">
+                        <label class="modal-label">Image (Optional)</label>
+                        <div class="input-with-btn">
+                            <input type="text" id="prompt-input-image-url" class="modern-input" placeholder="Image URL or Base64">
+                            <label class="icon-btn-label" title="Upload Local Image">
+                                <i data-lucide="upload"></i>
+                                <input type="file" id="prompt-input-image-file" accept="image/*" style="display:none;">
+                            </label>
+                        </div>
                     </div>
-                    <div class="form-group" id="prompt-group-file"
-                        style="margin-top: 15px; border-top: 1px solid var(--border-subtle); padding-top: 15px;">
-                        <label>Or Upload Local Image (File will be embedded)</label>
-                        <input type="file" id="prompt-input-file" accept="image/*" style="padding: 10px 0;">
+
+                    <div class="form-group" id="prompt-group-document" style="display:none;">
+                        <label class="modal-label">Link / Document (Optional)</label>
+                        <input type="text" id="prompt-input-external-url" class="modern-input" placeholder="External URL (e.g. https://...)">
+                        
+                        <div class="dashed-upload-box">
+                            <div class="upload-text">
+                                <strong>Upload Document</strong>
+                                <span>PDF, DOC, DOCX (Max 300KB)</span>
+                            </div>
+                            <label class="upload-btn">
+                                <i data-lucide="file-text"></i> Upload File
+                                <input type="file" id="prompt-input-document-file" accept=".pdf,.doc,.docx" style="display:none;">
+                            </label>
+                        </div>
+                        
+                        <div id="document-status" class="document-status" style="display:none;">
+                            <div class="status-success"><i data-lucide="check-circle-2"></i> Document uploaded: <span id="doc-filename">file.pdf</span></div>
+                            <button type="button" class="remove-doc-btn" id="remove-doc-btn"><i data-lucide="x"></i> Remove</button>
+                        </div>
                     </div>
-                    <button type="submit" class="btn-primary"
-                        style="margin-top: 20px; width: 100%; justify-content: center;">Save</button>
+
+                    <div class="form-group" id="prompt-group-github" style="display:none;">
+                        <label class="modal-label">GitHub Repository (Optional)</label>
+                        <input type="text" id="prompt-input-github" class="modern-input" placeholder="https://github.com/...">
+                    </div>
+
+                    <div class="modal-footer-btns">
+                        <button type="button" class="btn-cancel" id="cancel-prompt-btn">Cancel</button>
+                        <button type="submit" class="btn-primary">Save Item</button>
+                    </div>
                 </form>
             </div>
         </div>

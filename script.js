@@ -39,8 +39,9 @@ function renderContent() {
                     <img src="${p.imageUrl}" alt="${p.title}">
                 </div>
                 <div class="card-content">
-                    <div class="card-header">
+                    <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
                         <h3 class="card-title">${p.title}</h3>
+                        ${p.githubUrl ? `<a href="${p.githubUrl}" target="_blank" class="github-link"><i data-lucide="github"></i></a>` : ''}
                     </div>
                     <div class="card-desc-container">
                         <p class="card-desc">${p.description}</p>
@@ -71,6 +72,13 @@ function renderContent() {
                     <div class="card-desc-container">
                         <p class="card-desc">${c.description}</p>
                     </div>
+                    ${(c.externalUrl || c.documentData) ? `
+                        <div class="card-footer">
+                            <a href="${c.externalUrl || c.documentData}" target="_blank" class="view-doc-btn">
+                                <i data-lucide="external-link"></i> View Credential
+                            </a>
+                        </div>
+                    ` : ''}
                 </div>
             </div>
         `;
@@ -114,79 +122,106 @@ function renderContent() {
 // --- CUSTOM PROMPT MODAL LOGIC (Handles File Uploads to Base64) ---
 function openCustomPrompt(options, callback) {
     const modal = document.getElementById('custom-prompt-modal');
-    document.getElementById('custom-prompt-title').textContent = options.title || "Add Item";
+    document.getElementById('custom-prompt-title').textContent = options.title || "Edit Item";
     
     const form = document.getElementById('custom-prompt-form');
-    // Clone first so we can manipulate the new instance's properties
     const newForm = form.cloneNode(true);
     form.parentNode.replaceChild(newForm, form);
     
-    // Group 1
     const g1 = newForm.querySelector('#prompt-group-1');
     const i1 = newForm.querySelector('#prompt-input-1');
     if (options.label1) {
-        g1.style.display = 'flex';
-        newForm.querySelector('#prompt-label-1').textContent = options.label1;
+        g1.style.display = 'block';
+        i1.placeholder = options.label1;
         i1.value = options.val1 || '';
         i1.required = true;
-    } else {
-        g1.style.display = 'none';
-        i1.required = false;
-    }
+    } else { g1.style.display = 'none'; i1.required = false; }
     
-    // Group 2
     const g2 = newForm.querySelector('#prompt-group-2');
     const i2 = newForm.querySelector('#prompt-input-2');
     if (options.label2) {
-        g2.style.display = 'flex';
-        newForm.querySelector('#prompt-label-2').textContent = options.label2;
+        g2.style.display = 'block';
+        i2.placeholder = options.label2;
         i2.value = options.val2 || '';
         i2.required = false;
-    } else {
-        g2.style.display = 'none';
-        i2.required = false;
-    }
+    } else { g2.style.display = 'none'; i2.required = false; }
     
-    // Group 3
-    const g3 = newForm.querySelector('#prompt-group-3');
-    const i3 = newForm.querySelector('#prompt-input-3');
-    if (options.label3) {
-        g3.style.display = 'flex';
-        newForm.querySelector('#prompt-label-3').textContent = options.label3;
-        i3.value = options.val3 || '';
-        i3.required = false;
-    } else {
-        g3.style.display = 'none';
-        i3.required = false;
-    }
+    const gImg = newForm.querySelector('#prompt-group-image');
+    const iImgUrl = newForm.querySelector('#prompt-input-image-url');
+    const iImgFile = newForm.querySelector('#prompt-input-image-file');
+    if (options.showFileUpload || options.label3) {
+        gImg.style.display = 'block';
+        if (options.label3) gImg.querySelector('.modal-label').textContent = options.label3;
+        iImgUrl.value = options.val3 || '';
+    } else { gImg.style.display = 'none'; }
 
-    // File Upload Group
-    const gFile = newForm.querySelector('#prompt-group-file');
-    const iFile = newForm.querySelector('#prompt-input-file');
-    if (options.showFileUpload) {
-        gFile.style.display = 'block';
-        iFile.value = '';
-    } else {
-        gFile.style.display = 'none';
-    }
+    // Link / Document
+    const gDoc = newForm.querySelector('#prompt-group-document');
+    const iExtUrl = newForm.querySelector('#prompt-input-external-url');
+    const iDocFile = newForm.querySelector('#prompt-input-document-file');
+    const docStatus = newForm.querySelector('#document-status');
+    const docFilename = newForm.querySelector('#doc-filename');
+    const removeDocBtn = newForm.querySelector('#remove-doc-btn');
+    
+    let uploadedDocData = options.documentData || null;
+
+    if (options.showDocument) {
+        gDoc.style.display = 'block';
+        iExtUrl.value = options.externalUrlVal || '';
+        if (uploadedDocData) {
+            docStatus.style.display = 'flex';
+            docFilename.textContent = "Previously uploaded document";
+        }
+        iDocFile.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                const file = e.target.files[0];
+                if (file.size > 300 * 1024) {
+                    alert("File is too large! Maximum 300KB allowed to protect the database.");
+                    e.target.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    uploadedDocData = evt.target.result;
+                    docStatus.style.display = 'flex';
+                    docFilename.textContent = file.name;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        removeDocBtn.addEventListener('click', () => {
+            uploadedDocData = null;
+            iDocFile.value = '';
+            docStatus.style.display = 'none';
+        });
+    } else { gDoc.style.display = 'none'; }
+
+    // GitHub
+    const gGit = newForm.querySelector('#prompt-group-github');
+    const iGit = newForm.querySelector('#prompt-input-github');
+    if (options.showGithub) {
+        gGit.style.display = 'block';
+        iGit.value = options.githubVal || '';
+    } else { gGit.style.display = 'none'; }
 
     modal.style.display = 'flex';
 
-    // Close button
-    document.getElementById('close-prompt-btn').onclick = () => {
-        modal.style.display = 'none';
-    };
+    newForm.querySelector('#cancel-prompt-btn').onclick = () => { modal.style.display = 'none'; };
 
     newForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        
         const val1 = i1.value;
         const val2 = i2.value;
-        const val3 = i3.value;
+        const externalUrl = iExtUrl.value;
+        const githubUrl = iGit.value;
         
-        // Handle file upload if present
-        if (options.showFileUpload && iFile.files && iFile.files[0]) {
-            const file = iFile.files[0];
+        const finalize = (finalImgVal) => {
+            modal.style.display = 'none';
+            callback(val1, val2, finalImgVal, externalUrl, uploadedDocData, githubUrl);
+        };
+        
+        if (gImg.style.display !== 'none' && iImgFile.files && iImgFile.files[0]) {
+            const file = iImgFile.files[0];
             const reader = new FileReader();
             reader.onload = function(evt) {
                 const img = new Image();
@@ -195,29 +230,17 @@ function openCustomPrompt(options, callback) {
                     const MAX_WIDTH = 800;
                     let width = img.width;
                     let height = img.height;
-                    
-                    if (width > MAX_WIDTH) {
-                        height = Math.floor(height * (MAX_WIDTH / width));
-                        width = MAX_WIDTH;
-                    }
-                    
-                    canvas.width = width;
-                    canvas.height = height;
+                    if (width > MAX_WIDTH) { height = Math.floor(height * (MAX_WIDTH / width)); width = MAX_WIDTH; }
+                    canvas.width = width; canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
-                    
-                    // Compress to JPEG with 0.7 quality to save space
-                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
-                    
-                    modal.style.display = 'none';
-                    callback(val1, val2, compressedBase64); // Override val3 with file
+                    finalize(canvas.toDataURL('image/jpeg', 0.7));
                 };
                 img.src = evt.target.result;
             };
             reader.readAsDataURL(file);
         } else {
-            modal.style.display = 'none';
-            callback(val1, val2, val3);
+            finalize(iImgUrl.value);
         }
     });
 }
@@ -338,14 +361,29 @@ window.editItem = function(collection, id) {
             val2: item.description,
             label3: "Image URL",
             val3: item.imageUrl,
-            showFileUpload: true
-        }, (title, desc, img) => {
+            showFileUpload: true,
+            showGithub: collection === 'projects',
+            githubVal: item.githubUrl,
+            showDocument: collection === 'certifications',
+            externalUrlVal: item.externalUrl,
+            documentData: item.documentData
+        }, (title, desc, img, extUrl, docData, gitUrl) => {
             if(!title) return;
-            item.title = title;
-            item.description = desc;
-            if(img) item.imageUrl = img;
-            window.portfolioManager.saveData(data);
-            renderContent();
+            const data = window.portfolioManager.getData();
+            const targetItem = data[collection].find(i => i.id === id);
+            if (targetItem) {
+                targetItem.title = title;
+                targetItem.description = desc;
+                if(img) targetItem.imageUrl = img;
+                if (collection === 'projects') {
+                    targetItem.githubUrl = gitUrl;
+                } else if (collection === 'certifications') {
+                    targetItem.externalUrl = extUrl;
+                    targetItem.documentData = docData;
+                }
+                window.portfolioManager.saveData(data);
+                renderContent();
+            }
         });
     }
 };
@@ -417,15 +455,17 @@ function initAdminLogic() {
             label1: "Project Title",
             label2: "Description",
             label3: "Image URL",
-            showFileUpload: true
-        }, (title, desc, img) => {
+            showFileUpload: true,
+            showGithub: true
+        }, (title, desc, img, extUrl, docData, gitUrl) => {
             if(!title) return;
             const data = window.portfolioManager.getData();
             data.projects.push({
                 id: Date.now(),
                 title: title,
-                description: desc || "",
-                imageUrl: img || "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=800&q=80"
+                description: desc,
+                imageUrl: img || "",
+                githubUrl: gitUrl || ""
             });
             window.portfolioManager.saveData(data);
             renderContent();
@@ -438,15 +478,18 @@ function initAdminLogic() {
             label1: "Certification Title",
             label2: "Description",
             label3: "Image URL",
-            showFileUpload: true
-        }, (title, desc, img) => {
+            showFileUpload: true,
+            showDocument: true
+        }, (title, desc, img, extUrl, docData) => {
             if(!title) return;
             const data = window.portfolioManager.getData();
             data.certifications.push({
                 id: Date.now(),
                 title: title,
-                description: desc || "",
-                imageUrl: img || "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&q=80"
+                description: desc,
+                imageUrl: img || "",
+                externalUrl: extUrl || "",
+                documentData: docData || null
             });
             window.portfolioManager.saveData(data);
             renderContent();
