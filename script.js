@@ -35,7 +35,7 @@ const sectionTemplates = {
                     <div class="header-line"></div>
                     <button class="admin-add-btn" id="add-cert-btn" style="display:none;">+ Add Cert</button>
                 </div>
-                <div class="cert-stack-wrapper">
+                <div class="cert-stack-wrapper reveal reveal-delay-1">
                     <div class="cert-stack-container" id="render-certs-container"></div>
                     <div class="cert-pagination" id="render-certs-pagination"></div>
                 </div>
