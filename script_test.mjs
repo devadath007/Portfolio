@@ -1,4 +1,4 @@
-import { portfolioManager } from './data.js?v=10';
+import { portfolioManager } from './data.js?v=4';
 
 // --- STATE RENDERING LOGIC ---
 const sectionTemplates = {
@@ -9,7 +9,7 @@ const sectionTemplates = {
                     <h2>About Me</h2>
                     <div class="header-line"></div>
                 </div>
-                <div class="about-content reveal" style="grid-template-columns: 1fr;">
+                <div class="about-content" style="grid-template-columns: 1fr;">
                     <div class="about-text">
                         <p class="editable-text" id="render-about-bio" data-key="about.bio"></p>
                     </div>
@@ -35,10 +35,7 @@ const sectionTemplates = {
                     <div class="header-line"></div>
                     <button class="admin-add-btn" id="add-cert-btn" style="display:none;">+ Add Cert</button>
                 </div>
-                <div class="cert-stack-wrapper">
-                    <div class="cert-stack-container" id="render-certs-container"></div>
-                    <div class="cert-pagination" id="render-certs-pagination"></div>
-                </div>
+                <div class="projects-grid-new" id="render-certs-container"></div>
             </div>
         </section>`,
     'skills': () => `
@@ -60,7 +57,7 @@ const sectionTemplates = {
                     <div class="header-line"></div>
                     <button class="admin-edit-btn" id="edit-contact-btn" style="display:none;">Edit Contact Info</button>
                 </div>
-                <div class="contact-wrapper reveal">
+                <div class="contact-wrapper">
                     <div class="contact-info">
                         <h3>Let's build something together.</h3>
                         <p>I'm currently looking for new opportunities and collaborations. Whether you have a question or just want to say hi, my inbox is always open.</p>
@@ -91,18 +88,18 @@ function getSectionTemplate(sectionId, data) {
     if (sectionTemplates[sectionId]) return sectionTemplates[sectionId]();
     if (data.customSections && data.customSections[sectionId]) {
         const custom = data.customSections[sectionId];
-        return `
-        <section id="${sectionId}" class="custom-section">
+        return \`
+        <section id="\${sectionId}" class="custom-section">
             <div class="section-container">
                 <div class="section-header reveal">
-                    <h2>${custom.title}</h2>
+                    <h2>\${custom.title}</h2>
                     <div class="header-line"></div>
                 </div>
                 <div class="custom-content reveal">
-                    <p class="editable-text" id="render-custom-${sectionId}" data-key="customSections.${sectionId}.content">${custom.content || ''}</p>
+                    <p class="editable-text" id="render-custom-\${sectionId}" data-key="customSections.\${sectionId}.content">\${custom.content || ''}</p>
                 </div>
             </div>
-        </section>`;
+        </section>\`;
     }
     return '';
 }
@@ -141,11 +138,11 @@ function buildLayout(data) {
             
             // Last item becomes the button on desktop
             if (idx === layout.length - 1) {
-                deskHtml += `<a href="#${sectionId}" class="btn-primary nav-btn">${title}</a>`;
+                deskHtml += \`<a href="#\${sectionId}" class="btn-primary nav-btn">\${title}</a>\`;
             } else {
-                deskHtml += `<a href="#${sectionId}">${title}</a>`;
+                deskHtml += \`<a href="#\${sectionId}">\${title}</a>\`;
             }
-            mobHtml += `<a href="#${sectionId}">${title}</a>`;
+            mobHtml += \`<a href="#\${sectionId}">\${title}</a>\`;
         });
         
         deskNav.innerHTML = deskHtml;
@@ -167,145 +164,145 @@ function renderContent() {
     const heroImgWrapper = document.getElementById('render-hero-image');
     if (heroImgWrapper) {
         if (data.hero.imageUrl) {
-            heroImgWrapper.innerHTML = `<img src="${data.hero.imageUrl}" alt="Profile Picture" style="width:100%; height:100%; object-fit:cover; border-radius:50%; animation: fadeIn 0.5s ease-in-out;">`;
+            heroImgWrapper.innerHTML = `<img src="${data.hero.imageUrl}" alt="Profile Picture" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
         } else {
-            heroImgWrapper.innerHTML = '';
+            heroImgWrapper.innerHTML = `
+                <div class="profile-placeholder">
+                    <i data-lucide="user" class="placeholder-icon"></i>
+                </div>
+            `;
         }
     }
 
     // About
-    const aboutBio = document.getElementById('render-about-bio');
-    if (aboutBio && data.about) aboutBio.textContent = data.about.bio;
+    document.getElementById('render-about-bio').textContent = data.about.bio;
 
     // Projects
     const projectsContainer = document.getElementById('render-projects-container');
-    if (projectsContainer && data.projects) {
-        projectsContainer.innerHTML = '';
-        data.projects.forEach(p => {
-            const card = `
-                <div class="reveal">
-                    <div class="card-new" data-id="${p.id}">
-                    <div class="admin-actions-overlay">
-                        <button class="admin-edit-item-btn" onclick="editItem('projects', ${p.id})">Edit</button>
-                        <button class="admin-delete-btn" onclick="deleteItem('projects', ${p.id})">Delete</button>
+    projectsContainer.innerHTML = '';
+    data.projects.forEach(p => {
+        const card = `
+            <div class="reveal">
+                <div class="card-new" data-id="${p.id}">
+                <div class="admin-actions-overlay">
+                    <button class="admin-edit-item-btn" onclick="editItem('projects', ${p.id})">Edit</button>
+                    <button class="admin-delete-btn" onclick="deleteItem('projects', ${p.id})">Delete</button>
+                </div>
+                <div class="card-img-wrapper">
+                    <img src="${p.imageUrl}" alt="${p.title}">
+                </div>
+                <div class="card-content">
+                    <div class="card-header">
+                        <h3 class="card-title">${p.title}</h3>
                     </div>
-                    <div class="card-img-wrapper">
-                        <img src="${p.imageUrl}" alt="${p.title}">
-                    </div>
-                    <div class="card-content">
-                        <div class="card-header">
-                            <h3 class="card-title">${p.title}</h3>
-                        </div>
-                        <div class="card-desc-container">
-                            <p class="card-desc">${p.description}</p>
-                            ${p.githubUrl ? `
-                                <div style="margin-top: 12px; display: flex; justify-content: flex-start;">
-                                    <a href="${p.githubUrl}" target="_blank" class="github-link" title="View Repository">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-github"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" /><path d="M9 18c-4.51 2-5-2-7-2" /></svg>
-                                    </a>
-                                </div>
-                            ` : ''}
-                        </div>
-                    </div>
+                    <div class="card-desc-container">
+                        <p class="card-desc">${p.description}</p>
+                        ${p.githubUrl ? `
+                            <div style="margin-top: 12px; display: flex; justify-content: flex-start;">
+                                <a href="${p.githubUrl}" target="_blank" class="github-link" title="View Repository">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-github"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" /></svg>
+                                </a>
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
-            `;
-            projectsContainer.innerHTML += card;
-        });
-    }
+            </div>
+            </div>
+        `;
+        projectsContainer.innerHTML += card;
+    });
 
-    // Certifications (Vertical Stack)
+    // Certifications
     const certsContainer = document.getElementById('render-certs-container');
-    const certsPagination = document.getElementById('render-certs-pagination');
-    if (certsContainer && data.certifications && data.certifications.length > 0) {
-        certsContainer.innerHTML = '';
-        if (certsPagination) certsPagination.innerHTML = '';
-        
-        data.certifications.forEach((c, index) => {
-            const card = `
-                <div class="cert-card" data-index="${index}" data-id="${c.id}">
-                    <div class="admin-actions-overlay">
-                        <button class="admin-edit-item-btn" onclick="editItem('certifications', ${c.id}); event.stopPropagation();">Edit</button>
-                        <button class="admin-delete-btn" onclick="deleteItem('certifications', ${c.id}); event.stopPropagation();">Delete</button>
-                    </div>
-                    <div class="cert-card-image" style="background-image: url('${c.imageUrl}');"></div>
-                    <div class="cert-card-content">
-                        <h3>${c.title}</h3>
-                        <div class="cert-issuer">${c.organization || ''}</div>
-                        <div class="cert-date">${c.date || ''}</div>
-                        <a href="${c.pdfUrl || c.externalUrl || c.documentData || '#'}" target="_blank" class="cert-btn" onclick="event.stopPropagation()">View PDF</a>
-                    </div>
+    certsContainer.innerHTML = '';
+    data.certifications.forEach(c => {
+        const card = `
+            <div class="reveal">
+                <div class="card-new" data-id="${c.id}">
+                <div class="admin-actions-overlay">
+                    <button class="admin-edit-item-btn" onclick="editItem('certifications', ${c.id})">Edit</button>
+                    <button class="admin-delete-btn" onclick="deleteItem('certifications', ${c.id})">Delete</button>
                 </div>
-            `;
-            certsContainer.innerHTML += card;
-            
-            if (certsPagination) {
-                certsPagination.innerHTML += `<div class="cert-dot" data-index="${index}"></div>`;
-            }
-        });
-        
-        if (typeof window.initCertStack === 'function') {
-            window.initCertStack();
-        }
-    }
+                <div class="card-img-wrapper cert-card-img-wrapper">
+                    <img src="${c.imageUrl}" alt="${c.title}">
+                </div>
+                <div class="card-content">
+                    <div class="card-header">
+                        <h3 class="card-title">${c.title}</h3>
+                    </div>
+                    <div class="card-desc-container">
+                        <p class="card-desc">${c.description}</p>
+                    </div>
+                    ${(c.externalUrl || c.documentData) ? `
+                        <div class="card-footer">
+                            <a href="${c.externalUrl || c.documentData}" target="_blank" class="view-doc-btn">
+                                <i data-lucide="external-link"></i> View Credential
+                            </a>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+            </div>
+        `;
+        certsContainer.innerHTML += card;
+    });
 
     // Skills
     const skillsContainer = document.getElementById('render-skills-container');
-    if (skillsContainer && data.skills) {
-        skillsContainer.innerHTML = '';
-        data.skills.forEach((s) => {
-            const card = `
-                <div class="reveal">
-                    <div class="skill-card" data-id="${s.id}">
-                    <div class="admin-actions-overlay">
-                        <button class="admin-edit-btn" onclick="editItem('skills', ${s.id})" style="position:static; margin-bottom:5px;">Edit</button>
-                        <button class="admin-delete-btn" onclick="deleteItem('skills', ${s.id})" style="position:static;">Delete</button>
-                    </div>
-                    <img src="${s.imageUrl}" alt="${s.name}" class="skill-icon-img">
-                    <h4>${s.name}</h4>
-                    <p>${s.label}</p>
-                    </div>
+    skillsContainer.innerHTML = '';
+    
+    data.skills.forEach((s) => {
+        const card = `
+            <div class="reveal">
+                <div class="skill-card" data-id="${s.id}">
+                <div class="admin-actions-overlay">
+                    <button class="admin-edit-btn" onclick="editItem('skills', ${s.id})" style="position:static; margin-bottom:5px;">Edit</button>
+                    <button class="admin-delete-btn" onclick="deleteItem('skills', ${s.id})" style="position:static;">Delete</button>
                 </div>
-            `;
-            skillsContainer.innerHTML += card;
-        });
-    }
+                <img src="${s.imageUrl}" alt="${s.name}" class="skill-icon-img">
+                <h4>${s.name}</h4>
+                <p>${s.label}</p>
+                </div>
+            </div>
+        `;
+        skillsContainer.innerHTML += card;
+    });
 
     // Contact & Footer
     const contactMethodsContainer = document.getElementById('render-contact-methods');
-    if (contactMethodsContainer && data.contact) {
+    if (contactMethodsContainer) {
         contactMethodsContainer.innerHTML = '';
         if (data.contact.email) {
-            contactMethodsContainer.innerHTML += `
-                <a href="mailto:${data.contact.email}" class="contact-method">
+            contactMethodsContainer.innerHTML += \`
+                <a href="mailto:\${data.contact.email}" class="contact-method">
                     <i data-lucide="mail"></i>
-                    <span>${data.contact.email}</span>
+                    <span>\${data.contact.email}</span>
                 </a>
-            `;
+            \`;
         }
         if (data.contact.github) {
-            contactMethodsContainer.innerHTML += `
-                <a href="${data.contact.github}" target="_blank" class="contact-method">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-github"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" /><path d="M9 18c-4.51 2-5-2-7-2" /></svg>
+            contactMethodsContainer.innerHTML += \`
+                <a href="\${data.contact.github}" target="_blank" class="contact-method">
+                    <i data-lucide="github"></i>
                     <span>github.com</span>
                 </a>
-            `;
+            \`;
         }
         if (data.contact.linkedin) {
-            contactMethodsContainer.innerHTML += `
-                <a href="${data.contact.linkedin}" target="_blank" class="contact-method">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-linkedin"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" /><rect width="4" height="12" x="2" y="9" /><circle cx="4" cy="4" r="2" /></svg>
+            contactMethodsContainer.innerHTML += \`
+                <a href="\${data.contact.linkedin}" target="_blank" class="contact-method">
+                    <i data-lucide="linkedin"></i>
                     <span>linkedin.com</span>
                 </a>
-            `;
+            \`;
         }
         if (data.contact.instagram) {
-            contactMethodsContainer.innerHTML += `
-                <a href="${data.contact.instagram}" target="_blank" class="contact-method">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+            contactMethodsContainer.innerHTML += \`
+                <a href="\${data.contact.instagram}" target="_blank" class="contact-method">
+                    <i data-lucide="instagram"></i>
                     <span>instagram.com</span>
                 </a>
-            `;
+            \`;
         }
     }
 
@@ -711,10 +708,10 @@ function initAdminLogic() {
             let title = id.toUpperCase();
             if(data.customSections && data.customSections[id]) title = data.customSections[id].title;
             
-            div.innerHTML = `
-                <span><i data-lucide="grip-vertical" style="margin-right: 10px; width: 16px; opacity: 0.5;"></i> ${title}</span>
+            div.innerHTML = \`
+                <span><i data-lucide="grip-vertical" style="margin-right: 10px; width: 16px; opacity: 0.5;"></i> \${title}</span>
                 <button type="button" class="btn-cancel delete-layout-item" style="padding: 4px 8px; font-size: 0.8rem;">Remove</button>
-            `;
+            \`;
             layoutSortableList.appendChild(div);
         });
         if(window.lucide) window.lucide.createIcons();
@@ -772,10 +769,10 @@ function initAdminLogic() {
             div.className = 'admin-layout-item';
             div.dataset.id = sectionId;
             div.style.cssText = 'padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; cursor: grab; display: flex; justify-content: space-between; align-items: center; color: white;';
-            div.innerHTML = `
-                <span><i data-lucide="grip-vertical" style="margin-right: 10px; width: 16px; opacity: 0.5;"></i> ${title}</span>
+            div.innerHTML = \`
+                <span><i data-lucide="grip-vertical" style="margin-right: 10px; width: 16px; opacity: 0.5;"></i> \${title}</span>
                 <button type="button" class="btn-cancel delete-layout-item" style="padding: 4px 8px; font-size: 0.8rem;">Remove</button>
-            `;
+            \`;
             layoutSortableList.appendChild(div);
             if(window.lucide) window.lucide.createIcons();
             
@@ -951,18 +948,14 @@ function initContactForm() {
 // --- STANDARD UI LOGIC ---
 async function bootstrap() {
     // 1. Instantly render from local cache so the profile picture is there immediately
-    // 1. Initial render (fast local cache)
     renderContent();
-    
-    // 2. Trigger load animations IMMEDIATELY for luxury feel
+    // 2. Instantly trigger load animations
     document.body.classList.add('run-animation');
     
     // 3. Fetch from Firebase to ensure we have latest data
     await portfolioManager.init();
-    
     // 4. Re-render just in case Firebase had newer data
     renderContent();
-
     initContactForm();
     initAdminLogic();
 
@@ -1021,92 +1014,3 @@ if (document.readyState === 'loading') {
 } else {
     bootstrap();
 }
-
-window.initCertStack = function() {
-  const container = document.getElementById('render-certs-container');
-  const pagination = document.getElementById('render-certs-pagination');
-  if (!container || !pagination) return;
-
-  const cards = Array.from(container.querySelectorAll('.cert-card'));
-  const dots = Array.from(pagination.querySelectorAll('.cert-dot'));
-  if (cards.length === 0) return;
-
-  let currentIndex = 0;
-  let isScrolling = false;
-
-  function updateStack() {
-    cards.forEach((card, i) => {
-      card.className = 'cert-card'; // reset
-      let offset = i - currentIndex;
-
-      if (offset === 0) card.classList.add('active');
-      else if (offset === -1) card.classList.add('prev-1');
-      else if (offset === -2) card.classList.add('prev-2');
-      else if (offset === 1) card.classList.add('next-1');
-      else if (offset === 2) card.classList.add('next-2');
-      else if (offset < -2) card.classList.add('hidden-up');
-      else if (offset > 2) card.classList.add('hidden-down');
-    });
-
-    dots.forEach((dot, i) => {
-      if (i === currentIndex) dot.classList.add('active');
-      else dot.classList.remove('active');
-    });
-  }
-
-  function handleScroll(e) {
-    if (isScrolling) return;
-    
-    // Determine direction
-    const dir = Math.sign(e.deltaY);
-    if (dir > 0 && currentIndex < cards.length - 1) {
-      currentIndex++;
-      triggerScrollLock();
-    } else if (dir < 0 && currentIndex > 0) {
-      currentIndex--;
-      triggerScrollLock();
-    }
-  }
-
-  function triggerScrollLock() {
-    updateStack();
-    isScrolling = true;
-    setTimeout(() => { isScrolling = false; }, 600);
-  }
-
-  // Mouse wheel
-  container.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    handleScroll(e);
-  }, { passive: false });
-
-  // Pagination click
-  dots.forEach(dot => {
-    dot.addEventListener('click', (e) => {
-      currentIndex = parseInt(e.target.dataset.index);
-      updateStack();
-    });
-  });
-
-  // Touch Swipe
-  let touchStartY = 0;
-  container.addEventListener('touchstart', (e) => {
-    touchStartY = e.touches[0].clientY;
-  }, { passive: true });
-
-  container.addEventListener('touchend', (e) => {
-    const touchEndY = e.changedTouches[0].clientY;
-    const diff = touchStartY - touchEndY;
-    if (Math.abs(diff) > 30) {
-      if (diff > 0 && currentIndex < cards.length - 1) {
-        currentIndex++;
-      } else if (diff < 0 && currentIndex > 0) {
-        currentIndex--;
-      }
-      updateStack();
-    }
-  }, { passive: true });
-
-  // Init
-  updateStack();
-};
