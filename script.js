@@ -35,7 +35,8 @@ const sectionTemplates = {
                     <div class="header-line"></div>
                     <button class="admin-add-btn" id="add-cert-btn" style="display:none;">+ Add Cert</button>
                 </div>
-                <div class="cert-accordion-container" id="render-certs-container"></div>
+                <div class="cert-stack-container" id="render-certs-container"></div>
+                <div class="cert-stack-pagination" id="render-certs-pagination"></div>
             </div>
         </section>`,
     'skills': () => `
@@ -211,33 +212,46 @@ function renderContent() {
         });
     }
 
-    // Certifications (Accordion Showcase)
+    // Certifications (Samsung Wallet Stack)
     const certsContainer = document.getElementById('render-certs-container');
+    const certsPagination = document.getElementById('render-certs-pagination');
     if (certsContainer && data.certifications && data.certifications.length > 0) {
         certsContainer.innerHTML = '';
+        if (certsPagination) certsPagination.innerHTML = '';
         
+        window.activeCertIndex = window.activeCertIndex || 0;
+        if (window.activeCertIndex >= data.certifications.length) {
+            window.activeCertIndex = 0;
+        }
+
         data.certifications.forEach((c, index) => {
+            const isFront = index === window.activeCertIndex;
+            let stateClass = 'hidden';
+            if (index === window.activeCertIndex) stateClass = 'active';
+            else if (index === window.activeCertIndex + 1) stateClass = 'next-1';
+            else if (index === window.activeCertIndex + 2) stateClass = 'next-2';
+            else if (index === window.activeCertIndex + 3) stateClass = 'next-3';
+            else if (index === window.activeCertIndex - 1) stateClass = 'prev-1';
+            
             const card = `
-                <div class="cert-accordion-item" data-id="${c.id}">
+                <div class="cert-stack-card ${stateClass}" data-index="${index}" data-id="${c.id}">
                     <div class="admin-actions-overlay">
                         <button class="admin-edit-item-btn" onclick="editItem('certifications', ${c.id}); event.stopPropagation();">Edit</button>
                         <button class="admin-delete-btn" onclick="deleteItem('certifications', ${c.id}); event.stopPropagation();">Delete</button>
                     </div>
-                    <img class="cert-accordion-img" src="${c.imageUrl}" alt="${c.title}">
-                    <div class="cert-accordion-collapsed-label">${c.title}</div>
-                    <div class="cert-accordion-overlay">
-                        <h3 class="cert-accordion-title">${c.title}</h3>
-                        <p class="cert-accordion-desc">${c.description}</p>
-                        ${c.pdfUrl ? `<a href="${c.pdfUrl}" class="cert-accordion-link" target="_blank"><i data-lucide="file-text"></i> View Credential</a>` : ''}
+                    <img class="cert-stack-img" src="${c.imageUrl}" alt="${c.title}">
+                    <div class="cert-stack-overlay">
+                        <h3 class="cert-stack-title-overlay">${c.title}</h3>
                     </div>
                 </div>
             `;
             certsContainer.innerHTML += card;
-        });
 
-        if (window.lucide) {
-            lucide.createIcons();
-        }
+            if (certsPagination) {
+                certsPagination.innerHTML += `<div class="cert-stack-dot ${isFront ? 'active' : ''}" data-index="${index}"></div>`;
+            }
+        });
+        initCertStackInteractions();
     }
 
     // Skills
@@ -999,7 +1013,126 @@ if (document.readyState === 'loading') {
 }
 
 // --- SAMSUNG WALLET CARD STACK INTERACTIONS ---
+function initCertStackInteractions() {
+    const container = document.getElementById("render-certs-container");
+    if (!container) return;
 
+    if (container.dataset.initialized) {
+        return;
+    }
+    container.dataset.initialized = "true";
+
+    let startX = 0;
+    let isDragging = false;
+    let dragThreshold = 50;
+
+    const handleStart = (e) => {
+        isDragging = true;
+        startX = e.type.includes("mouse") ? e.pageX : e.touches[0].clientX;
+    };
+
+    const handleMove = (e) => {
+        if (!isDragging) return;
+        const currentX = e.type.includes("mouse") ? e.pageX : e.touches[0].clientX;
+        const diffX = startX - currentX;
+
+        // Prevent default scrolling only if dragging horizontally significantly
+        if (Math.abs(diffX) > 10 && e.cancelable) {
+            e.preventDefault();
+        }
+    };
+
+    const handleEnd = (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        const endX = e.type.includes("mouse") ? e.pageX : (e.changedTouches ? e.changedTouches[0].clientX : startX);
+        const diffX = startX - endX;
+
+        const data = window.portfolioManager.getData();
+        if (!data || !data.certifications) return;
+        const maxIndex = data.certifications.length - 1;
+
+        if (diffX > dragThreshold && window.activeCertIndex > 0) {
+            // Swipe left -> Show previous card (which is visually "next" in stack)
+            window.activeCertIndex--;
+            renderContent();
+        } else if (diffX < -dragThreshold && window.activeCertIndex < maxIndex) {
+            // Swipe right -> Show next card
+            window.activeCertIndex++;
+            renderContent();
+        }
+    };
+
+    // Touch events
+    container.addEventListener("touchstart", handleStart, { passive: false });
+    container.addEventListener("touchmove", handleMove, { passive: false });
+    container.addEventListener("touchend", handleEnd);
+
+    // Mouse events (for desktop drag)
+    container.addEventListener("mousedown", handleStart);
+    window.addEventListener("mousemove", handleMove, { passive: false });
+    window.addEventListener("mouseup", handleEnd);
+
+    // Click events
+    container.addEventListener("click", (e) => {
+        const card = e.target.closest(".cert-stack-card");
+        if (!card) return;
+        
+        // Prevent click if we were dragging
+        if (Math.abs(startX - (e.pageX || startX)) > 10) return;
+
+        const clickedIndex = parseInt(card.dataset.index);
+        
+        if (clickedIndex === window.activeCertIndex) {
+            // It is the front card, open detailed modal
+            openCertModal(clickedIndex);
+        } else {
+            // It is a background card, bring it to front
+            window.activeCertIndex = clickedIndex;
+            renderContent();
+        }
+    });
+
+    // Pagination Dots Click
+    const pagination = document.getElementById("render-certs-pagination");
+    if (pagination && !pagination.dataset.initialized) {
+        pagination.dataset.initialized = "true";
+        pagination.addEventListener("click", (e) => {
+            if (e.target.classList.contains("cert-stack-dot")) {
+                window.activeCertIndex = parseInt(e.target.dataset.index);
+                renderContent();
+            }
+        });
+    }
+}
+
+function openCertModal(index) {
+    const data = window.portfolioManager.getData();
+    if (!data || !data.certifications) return;
+    const cert = data.certifications[index];
+    if (!cert) return;
+
+    document.getElementById("cert-modal-img").src = cert.imageUrl || "";
+    document.getElementById("cert-modal-title").textContent = cert.title || "Certification";
+    document.getElementById("cert-modal-desc").textContent = cert.description || "";
+    
+    const linkContainer = document.getElementById("cert-modal-link-container");
+    linkContainer.innerHTML = "";
+    const linkUrl = cert.externalUrl || cert.documentData;
+    if (linkUrl) {
+        linkContainer.innerHTML = `<a href="${linkUrl}" target="_blank" class="cert-modal-link-btn"><i data-lucide="external-link"></i> View Credential</a>`;
+    }
+
+    const modal = document.getElementById("cert-details-modal");
+    modal.style.display = "flex";
+    setTimeout(() => {
+        modal.classList.add("show");
+    }, 10);
+    
+    if (window.lucide) {
+        window.lucide.createIcons();
+    }
+}
 
 document.addEventListener("DOMContentLoaded", () => {
     const closeBtn = document.getElementById("close-cert-btn");

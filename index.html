@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="styles.css?v=15">
+    <link rel="stylesheet" href="styles.css?v=14">
 </head>
 
 <body>
@@ -205,9 +205,25 @@
         </div>
     </div>
 
+    <!-- CERTIFICATE DETAILS MODAL -->
+    <div class="cert-modal-overlay" id="cert-details-modal" style="display: none;">
+        <div class="cert-modal">
+            <button class="close-cert-btn" id="close-cert-btn"><i data-lucide="x"></i></button>
+            <div class="cert-modal-body">
+                <div class="cert-modal-img-container">
+                    <img id="cert-modal-img" src="" alt="Certificate">
+                </div>
+                <div class="cert-modal-content">
+                    <h2 id="cert-modal-title"></h2>
+                    <p id="cert-modal-desc"></p>
+                    <div id="cert-modal-link-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-    <script type="module" src="script.js?v=15"></script>
+    <script type="module" src="script.js?v=14"></script>
 </body>
 
 </html>
