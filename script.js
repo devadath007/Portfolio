@@ -471,6 +471,7 @@ function toggleAdminMode(enable) {
         // Enable drag and drop sorting for skills
         const skillsContainer = document.getElementById('render-skills-container');
         if (skillsContainer && window.Sortable) {
+            if (window.skillsSortable) window.skillsSortable.destroy();
             window.skillsSortable = new Sortable(skillsContainer, {
                 animation: 150,
                 ghostClass: 'sortable-ghost',
@@ -487,6 +488,7 @@ function toggleAdminMode(enable) {
         // Enable drag and drop sorting for certifications via pagination dots
         const certsPagination = document.getElementById('render-certs-pagination');
         if (certsPagination && window.Sortable) {
+            if (window.certsSortable) window.certsSortable.destroy();
             window.certsSortable = new Sortable(certsPagination, {
                 animation: 150,
                 ghostClass: 'sortable-ghost',
@@ -503,6 +505,7 @@ function toggleAdminMode(enable) {
         // Enable drag and drop sorting for projects
         const projectsContainer = document.getElementById('render-projects-container');
         if (projectsContainer && window.Sortable) {
+            if (window.projectsSortable) window.projectsSortable.destroy();
             window.projectsSortable = new Sortable(projectsContainer, {
                 animation: 150,
                 ghostClass: 'sortable-ghost',
@@ -1074,6 +1077,13 @@ window.initCertStack = function() {
   const dots = Array.from(pagination.querySelectorAll('.cert-dot'));
   if (cards.length === 0) return;
 
+  // Cleanup old listeners if re-initializing
+  if (window.certStackAbortController) {
+      window.certStackAbortController.abort();
+  }
+  window.certStackAbortController = new AbortController();
+  const signal = window.certStackAbortController.signal;
+
   let currentIndex = 0;
   let isScrolling = false;
 
@@ -1121,21 +1131,21 @@ window.initCertStack = function() {
   container.addEventListener('wheel', (e) => {
     e.preventDefault();
     handleScroll(e);
-  }, { passive: false });
+  }, { passive: false, signal });
 
   // Pagination click
   dots.forEach(dot => {
     dot.addEventListener('click', (e) => {
       currentIndex = parseInt(e.target.dataset.index);
       updateStack();
-    });
+    }, { signal });
   });
 
   // Touch Swipe
   let touchStartY = 0;
   container.addEventListener('touchstart', (e) => {
     touchStartY = e.touches[0].clientY;
-  }, { passive: true });
+  }, { passive: true, signal });
 
   container.addEventListener('touchend', (e) => {
     const touchEndY = e.changedTouches[0].clientY;
@@ -1148,7 +1158,7 @@ window.initCertStack = function() {
       }
       updateStack();
     }
-  }, { passive: true });
+  }, { passive: true, signal });
 
   // Init
   updateStack();
