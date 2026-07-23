@@ -484,10 +484,10 @@ function toggleAdminMode(enable) {
             });
         }
 
-        // Enable drag and drop sorting for certifications
-        const certsContainer = document.getElementById('render-certs-container');
-        if (certsContainer && window.Sortable) {
-            window.certsSortable = new Sortable(certsContainer, {
+        // Enable drag and drop sorting for certifications via pagination dots
+        const certsPagination = document.getElementById('render-certs-pagination');
+        if (certsPagination && window.Sortable) {
+            window.certsSortable = new Sortable(certsPagination, {
                 animation: 150,
                 ghostClass: 'sortable-ghost',
                 onEnd: function (evt) {
@@ -495,6 +495,7 @@ function toggleAdminMode(enable) {
                     const movedItem = data.certifications.splice(evt.oldIndex, 1)[0];
                     data.certifications.splice(evt.newIndex, 0, movedItem);
                     window.portfolioManager.saveData(data);
+                    renderContent(); // Re-render to sync cards with new dot order
                 }
             });
         }
