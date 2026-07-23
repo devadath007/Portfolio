@@ -440,14 +440,14 @@ function openCustomPrompt(options, callback) {
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 800;
+                    const MAX_WIDTH = 600;
                     let width = img.width;
                     let height = img.height;
                     if (width > MAX_WIDTH) { height = Math.floor(height * (MAX_WIDTH / width)); width = MAX_WIDTH; }
                     canvas.width = width; canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
-                    finalize(canvas.toDataURL('image/png'));
+                    finalize(canvas.toDataURL('image/jpeg', 0.5));
                 };
                 img.src = evt.target.result;
             };
