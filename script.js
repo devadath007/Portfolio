@@ -228,9 +228,10 @@ function renderContent() {
             const isFront = index === window.activeCertIndex;
             let stateClass = 'hidden';
             if (index === window.activeCertIndex) stateClass = 'active';
-            else if (index === window.activeCertIndex - 1) stateClass = 'prev-1';
-            else if (index === window.activeCertIndex - 2) stateClass = 'prev-2';
             else if (index === window.activeCertIndex + 1) stateClass = 'next-1';
+            else if (index === window.activeCertIndex + 2) stateClass = 'next-2';
+            else if (index === window.activeCertIndex + 3) stateClass = 'next-3';
+            else if (index === window.activeCertIndex - 1) stateClass = 'prev-1';
             
             const card = `
                 <div class="cert-stack-card ${stateClass}" data-index="${index}" data-id="${c.id}">
