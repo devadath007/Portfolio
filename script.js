@@ -239,10 +239,6 @@ function renderContent() {
                         <button class="admin-delete-btn" onclick="deleteItem('certifications', ${c.id}); event.stopPropagation();">Delete</button>
                     </div>
                     <img class="cert-stack-img" src="${c.imageUrl}" alt="${c.title}">
-                    <div class="cert-stack-info">
-                        <h3 class="cert-stack-title">${c.title}</h3>
-                        <p class="cert-stack-desc">${c.description}</p>
-                    </div>
                 </div>
             `;
             certsContainer.innerHTML += card;
