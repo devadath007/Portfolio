@@ -231,9 +231,6 @@ function renderContent() {
                     <div class="cert-card-image" style="background-image: url('${c.imageUrl}');"></div>
                     <div class="cert-card-content">
                         <h3>${c.title}</h3>
-                        <div class="cert-issuer">${c.organization || ''}</div>
-                        <div class="cert-date">${c.date || ''}</div>
-                        <a href="${c.pdfUrl || c.externalUrl || c.documentData || '#'}" target="_blank" class="cert-btn" onclick="event.stopPropagation()">View PDF</a>
                     </div>
                 </div>
             `;
@@ -242,6 +239,15 @@ function renderContent() {
             if (certsPagination) {
                 certsPagination.innerHTML += `<div class="cert-dot" data-index="${index}"></div>`;
             }
+        });
+        
+        // Click active card to open detail modal
+        certsContainer.addEventListener('click', (e) => {
+            const card = e.target.closest('.cert-card');
+            if (!card || !card.classList.contains('active')) return;
+            const certId = parseInt(card.dataset.id);
+            const cert = data.certifications.find(c => c.id === certId);
+            if (cert) openCertDetailModal(cert);
         });
         
         if (typeof window.initCertStack === 'function') {
@@ -1021,6 +1027,42 @@ if (document.readyState === 'loading') {
 } else {
     bootstrap();
 }
+
+
+
+// Certificate Detail Modal
+function openCertDetailModal(cert) {
+    // Remove any existing modal
+    const existing = document.getElementById('cert-detail-modal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'cert-detail-modal';
+    modal.className = 'cert-detail-overlay';
+    
+    let html = '<div class="cert-detail-modal">';
+    html += '<button class="cert-detail-close" onclick="this.closest(\'.cert-detail-overlay\').remove()">';
+    html += '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+    html += '</button>';
+    html += '<div class="cert-detail-img"><img src="' + cert.imageUrl + '" alt="' + cert.title + '"></div>';
+    html += '<div class="cert-detail-body">';
+    html += '<h2>' + cert.title + '</h2>';
+    if (cert.organization) html += '<p class="cert-detail-org">' + cert.organization + '</p>';
+    if (cert.date) html += '<p class="cert-detail-date">' + cert.date + '</p>';
+    if (cert.description) html += '<p class="cert-detail-desc">' + cert.description + '</p>';
+    var linkUrl = cert.pdfUrl || cert.externalUrl || cert.documentData;
+    if (linkUrl) html += '<a href="' + linkUrl + '" target="_blank" class="cert-detail-link">View Credential</a>';
+    html += '</div></div>';
+
+    modal.innerHTML = html;
+    document.body.appendChild(modal);
+    requestAnimationFrame(function() { modal.classList.add('show'); });
+
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) modal.remove();
+    });
+}
+window.openCertDetailModal = openCertDetailModal;
 
 window.initCertStack = function() {
   const container = document.getElementById('render-certs-container');
