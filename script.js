@@ -239,9 +239,14 @@ function renderContent() {
                         <button class="admin-edit-item-btn" onclick="editItem('certifications', ${c.id}); event.stopPropagation();">Edit</button>
                         <button class="admin-delete-btn" onclick="deleteItem('certifications', ${c.id}); event.stopPropagation();">Delete</button>
                     </div>
-                    <img class="cert-stack-img" src="${c.imageUrl}" alt="${c.title}">
-                    <div class="cert-stack-overlay">
-                        <h3 class="cert-stack-title-overlay">${c.title}</h3>
+                    <div class="cert-stack-img-wrapper">
+                        <img class="cert-stack-img" src="${c.imageUrl}" alt="${c.title}">
+                    </div>
+                    <div class="cert-stack-info">
+                        <h3 class="cert-stack-title">${c.title}</h3>
+                        ${c.organization ? `<p class="cert-stack-org">${c.organization}</p>` : ''}
+                        ${c.date ? `<p class="cert-stack-date">${c.date}</p>` : ''}
+                        <a href="${c.pdfUrl || '#'}" class="cert-stack-btn" target="_blank" onclick="event.stopPropagation()">View Certificate</a>
                     </div>
                 </div>
             `;
