@@ -1886,3 +1886,28 @@ textarea.modern-input {
     transform: translateY(-2px);
 }
 
+
+.cert-stack-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.5) 50%, transparent 100%);
+    z-index: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 30px 20px;
+}
+
+.cert-stack-title-overlay {
+    color: #fff;
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-align: center;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    margin: 0;
+    line-height: 1.3;
+}
+
